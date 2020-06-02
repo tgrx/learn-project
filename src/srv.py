@@ -1,5 +1,6 @@
 import os
 import socketserver
+from datetime import date
 from http.server import SimpleHTTPRequestHandler
 from typing import Dict
 from urllib.parse import parse_qs
@@ -18,7 +19,11 @@ class MyHandler(SimpleHTTPRequestHandler):
     def handle_hello(self):
         args = self.build_query_args()
         name = args.get("name", "Anonymous")
+        age = int(args.get("age", 0))
         msg = f"Hello {name}!"
+        if age:
+            year = date.today().year - age
+            msg += f"\n\nYou was born at {year}."
         self.respond(msg)
 
     def build_query_args(self) -> Dict:
