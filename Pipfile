@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 httpie = "*"
+ipython = "*"
 
 [packages]
 django = "*"
