@@ -13,15 +13,14 @@ class MyHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         path = self.extract_path()
         handlers = {
-            "hello": self.handle_hello,
-            "goodbye": self.handle_goodbye,
+            "/hello": self.handle_hello,
+            "/goodbye": self.handle_goodbye,
         }
 
         handler = handlers.get(path, super().do_GET)
-        response = handler()
-        self.respond(response)
+        handler()
 
-    def handle_hello(self) -> str:
+    def handle_hello(self) -> None:
         args = self.build_query_args()
         name = self.build_name(args)
         age = self.build_age(args)
@@ -31,10 +30,11 @@ class MyHandler(SimpleHTTPRequestHandler):
             year = date.today().year - age
             msg += f"\n\nYou was born at {year}."
 
-        return msg
+        self.respond(msg)
 
-    def handle_goodbye(self) -> str:
-        return "Hasta la vista, baby!"
+    def handle_goodbye(self) -> None:
+        msg = "Hasta la vista, baby!"
+        self.respond(msg)
 
     def build_query_args(self) -> Dict:
         _path, *qs = self.path.split("?")
