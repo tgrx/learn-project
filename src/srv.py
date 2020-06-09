@@ -11,20 +11,30 @@ print(f"PORT = {PORT}")
 
 class MyHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
-        if self.path.startswith("/hello"):
-            return self.handle_hello()
-        else:
-            return SimpleHTTPRequestHandler.do_GET(self)
+        path = self.extract_path()
+        handlers = {
+            "hello": self.handle_hello,
+            "goodbye": self.handle_goodbye,
+        }
 
-    def handle_hello(self):
+        handler = handlers.get(path, super().do_GET)
+        response = handler()
+        self.respond(response)
+
+    def handle_hello(self) -> str:
         args = self.build_query_args()
-        name = args.get("name", "Anonymous")
-        age = int(args.get("age", 0))
+        name = self.build_name(args)
+        age = self.build_age(args)
+
         msg = f"Hello {name}!"
         if age:
             year = date.today().year - age
             msg += f"\n\nYou was born at {year}."
-        self.respond(msg)
+
+        return msg
+
+    def handle_goodbye(self) -> str:
+        return "Hasta la vista, baby!"
 
     def build_query_args(self) -> Dict:
         _path, *qs = self.path.split("?")
@@ -43,7 +53,16 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         return args
 
-    def respond(self, msg: str):
+    def extract_path(self) -> str:
+        return self.path.split("?")[0].split("#")[0]
+
+    def build_name(self, query_args: Dict) -> str:
+        return query_args.get("name", "Anonymous")
+
+    def build_age(self, query_args: Dict) -> int:
+        return int(query_args.get("age", 0))
+
+    def respond(self, msg: str) -> None:
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.send_header("Content-length", str(len(msg)))
