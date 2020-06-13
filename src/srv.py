@@ -18,7 +18,9 @@ class MyHandler(SimpleHTTPRequestHandler):
             "/goodbye": self.handle_goodbye,
         }
 
-        handler = handlers.get(path, super().do_GET)
+        default_handler = super().do_GET
+
+        handler = handlers.get(path, default_handler)
         handler()
 
     def handle_hello(self) -> None:
