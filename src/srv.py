@@ -1,9 +1,9 @@
 import os
 import socketserver
-from datetime import date
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler
 from typing import Dict
+from typing import Union
 from urllib.parse import parse_qs
 
 PORT = int(os.getenv("PORT", 8000))
@@ -29,7 +29,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         age = self.build_age(args)
 
         msg = f"Hello {name}!"
-        if age:
+        if age is not None:
             year = datetime.now().year - age
             msg += f"\n\nYou was born at {year}."
 
@@ -42,6 +42,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         self.respond(msg)
 
     def build_query_args(self) -> Dict:
+        breakpoint()
         _path, *qs = self.path.split("?")
         args = {}
 
@@ -59,13 +60,20 @@ class MyHandler(SimpleHTTPRequestHandler):
         return args
 
     def extract_path(self) -> str:
-        return self.path.split("?")[0].split("#")[0]
+        path, *_rest = self.path.split("?")
+        path, *_rest = path.split("#")
+        if path[-1] == "/":
+            path = path[:-1]
+        return path
 
     def build_name(self, query_args: Dict) -> str:
         return query_args.get("name", "Anonymous")
 
-    def build_age(self, query_args: Dict) -> int:
-        return int(query_args.get("age", 0))
+    def build_age(self, query_args: Dict) -> Union[int, None]:
+        age = query_args.get("age")
+        if age is None:
+            return age
+        return int(age)
 
     def respond(self, msg: str) -> None:
         self.send_response(200)
