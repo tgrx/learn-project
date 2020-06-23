@@ -65,6 +65,7 @@ pip-log.txt
 pip-wheel-metadata/
 profile_default/
 sdist/
+sessions.json
 share/python-wheels/
 target/
 var/
