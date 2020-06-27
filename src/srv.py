@@ -103,9 +103,9 @@ class MyHandler(SimpleHTTPRequestHandler):
             raise MethodNotAllowed
 
     def handle_hello_get(self) -> None:
-        args = self.load_user_sessions() or self.build_query_args()
-        name = self.build_name(args)
-        age = self.build_age(args)
+        session = self.load_user_session() or self.build_query_args()
+        name = self.build_name(session)
+        age = self.build_age(session)
 
         year = None
         if age is not None:
@@ -122,10 +122,10 @@ class MyHandler(SimpleHTTPRequestHandler):
 
     def handle_hello_post(self) -> None:
         form = self.get_form()
-        sessions = self.load_user_sessions()
-        sessions.update(form)
-        self.save_user_sessions(sessions)
-        self.redirect("/")
+        session = self.load_user_session()
+        session.update(form)
+        session_id = self.save_user_session(session)
+        self.redirect("/", headers={"Set-Cookie": f"SID={session_id}; Max-Age=120"})
 
     def handle_goodbye(self, method: str) -> None:
         hour = datetime.now().hour
@@ -133,14 +133,40 @@ class MyHandler(SimpleHTTPRequestHandler):
         msg = f"Buenos {tod}"
         self.respond(msg)
 
-    def load_user_sessions(self) -> Dict:
+    def get_session_id(self) -> Union[str, None]:
+        cookie = self.headers.get("Cookie")
+        if not cookie:
+            return None
+
+        qs, *_extra = cookie.split(";")
+        args = linearize_qs(parse_qs(qs))
+        session_id = args.get("SID")
+        return session_id
+
+    def load_user_session(self) -> Dict:
+        session_id = self.get_session_id()
+        if not session_id:
+            return {}
+
+        sessions = self.load_sessions_file()
+        return sessions.get(session_id, {})
+
+    def save_user_session(self, session: Dict) -> str:
+        session_id = self.get_session_id() or os.urandom(16).hex()
+        sessions = self.load_sessions_file()
+        sessions[session_id] = session
+        self.save_sessions_file(sessions)
+
+        return session_id
+
+    def load_sessions_file(self) -> Dict:
         try:
             with USER_SESSIONS.open("r") as fp:
                 return json.load(fp)
         except (json.JSONDecodeError, FileNotFoundError):
             return {}
 
-    def save_user_sessions(self, sessions: Dict) -> None:
+    def save_sessions_file(self, sessions):
         with USER_SESSIONS.open("w") as fp:
             json.dump(sessions, fp)
 
@@ -201,8 +227,12 @@ class MyHandler(SimpleHTTPRequestHandler):
         msg = f"{hdr}\n\n{exc}"
         self._respond(500, msg, {h("content-type"): "text/plain"})
 
-    def redirect(self, redirect_to: str):
-        self._respond(302, None, {h("location"): redirect_to})
+    def redirect(self, redirect_to: str, headers: Optional[Dict] = None):
+        actual_headers = {h("location"): redirect_to}
+        if headers:
+            actual_headers.update(headers)
+
+        self._respond(302, None, actual_headers)
 
     def respond(
         self,
