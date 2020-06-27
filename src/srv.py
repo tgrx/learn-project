@@ -10,52 +10,46 @@ from typing import Optional
 from typing import Union
 from urllib.parse import parse_qs
 
+from errors import MethodNotAllowed
+from errors import NotFound
+from errors import UnknownPath
+from utils import get_static_content
+from utils import h
+from utils import linearize_qs
+
 PORT = int(os.getenv("PORT", 8000))
-print(f"PORT = {PORT}")
-
 PROJECT_DIR = Path(__file__).parent.parent.resolve()
-print(f"PROJECT_DIR = {PROJECT_DIR}")
-
 TEMPLATES_DIR = PROJECT_DIR / "templates"
-print(f"TEMPLATES_DIR = {TEMPLATES_DIR}")
-
 USER_SESSIONS = PROJECT_DIR / "sessions.json"
+DEBUG = True
+
+print("*" * 80)
+print(f"PORT = {PORT}")
+print(f"PROJECT_DIR = {PROJECT_DIR}")
+print(f"TEMPLATES_DIR = {TEMPLATES_DIR}")
 print(f"USER_SESSIONS = {USER_SESSIONS}")
-
-
-class AppError(RuntimeError):
-    pass
-
-
-class NotFound(AppError):
-    pass
-
-
-class MethodNotAllowed(AppError):
-    ...
-
-
-class UnknownPath(AppError):
-    pass
+print(f"DEBUG = {DEBUG}")
+print("*" * 80)
 
 
 class MyHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         try:
-            self.do("get")
+            self.dispatch("get")
         except UnknownPath:
-            super().do_GET()
+            self.handle_404()
 
     def do_POST(self):
         try:
-            self.do("post")
+            self.dispatch("post")
         except UnknownPath:
-            super().do_POST()
+            self.handle_404()
 
-    def do(self, method: str):
+    def dispatch(self, method: str):
         handlers = {
-            "/hello": self.handle_hello,
+            "": self.handle_index,
             "/goodbye": self.handle_goodbye,
+            "/hello": self.handle_hello,
             "/projects": self.handle_projects,
             "/resume": self.handle_resume,
         }
@@ -69,72 +63,69 @@ class MyHandler(SimpleHTTPRequestHandler):
         try:
             handler(method)
         except NotFound:
-            self.respond_404()
+            self.handle_404()
         except MethodNotAllowed:
-            self.respond_405()
+            self.handle_405()
         except Exception:
-            self.respond_500()
+            self.handle_500()
             traceback.print_exc()
 
+    def handle_index(self, method: str):
+        template = TEMPLATES_DIR / "index.html"
+        html_template = get_static_content(template)
+        html_base = get_static_content(TEMPLATES_DIR / "base.html")
+        html = html_base.format(title="Learn Project", body=html_template)
+        self.respond(html)
+
     def handle_projects(self, method: str):
-        html = TEMPLATES_DIR / "projects" / "index.html"
-        contents = self.get_file_contents(html)
-        self.respond(contents)
+        template = TEMPLATES_DIR / "projects" / "index.html"
+        html_template = get_static_content(template)
+        html_base = get_static_content(TEMPLATES_DIR / "base.html")
+        html = html_base.format(title="Projects :: Learn Project", body=html_template)
+        self.respond(html)
 
     def handle_resume(self, method: str):
-        html = TEMPLATES_DIR / "resume" / "index.html"
-        contents = self.get_file_contents(html)
-        self.respond(contents)
-
-    def get_file_contents(self, fp: Path) -> str:
-        if not fp.is_file():
-            raise NotFound
-
-        with fp.open("r") as src:
-            ct = src.read()
-
-        return ct
+        template = TEMPLATES_DIR / "resume" / "index.html"
+        html_template = get_static_content(template)
+        html_base = get_static_content(TEMPLATES_DIR / "base.html")
+        html = html_base.format(title="Resume :: Learn Project", body=html_template)
+        self.respond(html)
 
     def handle_hello(self, method: str) -> None:
-        if method == "post":
-            content_length = int(self.headers["Content-Length"])
-            data = self.rfile.read(content_length)
-            form = self.build_form(data)
-            sessions = self.load_user_sessions()
-            sessions.update(form)
-            self.save_user_sessions(sessions)
-            self.respond_302("/")
-            return
-
+        handlers = {
+            "get": self.handle_hello_get,
+            "post": self.handle_hello_post,
+        }
         try:
-            with USER_SESSIONS.open("r") as fp:
-                args = json.load(fp)
-        except (json.JSONDecodeError, FileNotFoundError):
-            args = self.build_query_args()
+            handler = handlers[method]
+            return handler()
+        except KeyError:
+            raise MethodNotAllowed
 
+    def handle_hello_get(self) -> None:
+        args = self.load_user_sessions() or self.build_query_args()
         name = self.build_name(args)
         age = self.build_age(args)
 
-        msg = f"Hello {name}!"
+        year = None
         if age is not None:
             year = datetime.now().year - age
-            msg += f"\n\nYou was born at {year}."
 
-        msg += f"""
-        <form method="post">
-        <p>
-        <label for="name">Name:</label>
-        <input id="name" name="name"></input>
-        </p>
-        <p>
-        <label for="age">Age:</label>
-        <input id="age" name="age"></input>
-        </p>
-        <button type="submit">Send</button>
-        </form>
-        """
+        html_form = get_static_content(TEMPLATES_DIR / "hello" / "form.html")
+        html_index = get_static_content(TEMPLATES_DIR / "hello" / "index.html")
+        html_base = get_static_content(TEMPLATES_DIR / "base.html")
 
-        self.respond(msg)
+        html = html_index.format(form=html_form, name=name, birth_year=year)
+        html = html_base.format(title="Hello!", body=html)
+
+        self.respond(html)
+
+    def handle_hello_post(self) -> None:
+        form = self.get_form()
+        sessions = self.load_user_sessions()
+        sessions.update(form)
+        self.save_user_sessions(sessions)
+        self.redirect("/")
 
     def handle_goodbye(self, method: str) -> None:
         hour = datetime.now().hour
@@ -142,33 +133,43 @@ class MyHandler(SimpleHTTPRequestHandler):
         msg = f"Buenos {tod}"
         self.respond(msg)
 
+    def load_user_sessions(self) -> Dict:
+        try:
+            with USER_SESSIONS.open("r") as fp:
+                return json.load(fp)
+        except (json.JSONDecodeError, FileNotFoundError):
+            return {}
+
+    def save_user_sessions(self, sessions: Dict) -> None:
+        with USER_SESSIONS.open("w") as fp:
+            json.dump(sessions, fp)
+
     def build_query_args(self) -> Dict:
         _path, *qs = self.path.split("?")
-        args = {}
-
         if len(qs) != 1:
-            return args
+            return {}
 
         qs = qs[0]
         qs = parse_qs(qs)
-
-        for key, values in qs.items():
-            if not values:
-                continue
-            args[key] = values[0]
+        args = linearize_qs(qs)
 
         return args
 
-    def build_form(self, data: bytes) -> Dict[str, str]:
-        payload = data.decode()
+    def get_form(self) -> Dict[str, str]:
+        payload = self.get_request_payload()
         qs = parse_qs(payload)
-        form = {}
-        for key, values in qs.items():
-            if not values:
-                continue
-            form[key] = values[0]
+        form = linearize_qs(qs)
 
         return form
+
+    def get_request_payload(self) -> str:
+        try:
+            content_length = int(self.headers[h("content-length")])
+            payload = self.rfile.read(content_length)
+        except (KeyError, ValueError):
+            payload = ""
+
+        return payload.decode()
 
     def extract_path(self) -> str:
         path, *_rest = self.path.split("?")
@@ -186,22 +187,22 @@ class MyHandler(SimpleHTTPRequestHandler):
             return age
         return int(age)
 
-    def respond_404(self) -> None:
+    def handle_404(self) -> None:
         msg = "Ooops! Nothing found!"
-        self._respond(404, msg, {"Content-Type": "text/plain"})
+        self._respond(404, msg, {h("content-type"): "text/plain"})
 
-    def respond_405(self) -> None:
+    def handle_405(self) -> None:
         msg = "Method Not Allowed"
-        self._respond(405, msg, {"Content-Type": "text/plain"})
+        self._respond(405, msg, {h("content-type"): "text/plain"})
 
-    def respond_500(self) -> None:
+    def handle_500(self) -> None:
         hdr = "Internal Server Error"
-        exc = traceback.format_exc()
+        exc = traceback.format_exc() if DEBUG else ""
         msg = f"{hdr}\n\n{exc}"
-        self._respond(500, msg, {"Content-Type": "text/plain"})
+        self._respond(500, msg, {h("content-type"): "text/plain"})
 
-    def respond_302(self, redirect_to: str):
-        self._respond(302, None, {"Location": redirect_to})
+    def redirect(self, redirect_to: str):
+        self._respond(302, None, {h("location"): redirect_to})
 
     def respond(
         self,
@@ -210,12 +211,12 @@ class MyHandler(SimpleHTTPRequestHandler):
         content_type: Optional[str] = None,
     ) -> None:
         actual_headers = headers or {}
-        actual_headers = {h.upper(): v for h, v in actual_headers.items()}
-        actual_headers.update({"CONTENT-LENGTH": str(len(msg))})
-        actual_headers.update({"CACHE-CONTROL": f"max-age={30 * 24 * 60 * 60}"})
+        actual_headers = {h(header): value for header, value in actual_headers.items()}
+        actual_headers.update({h("content-length"): str(len(msg))})
+        actual_headers.update({h("cache-control"): f"max-age={10 * 60}"})
 
-        if content_type or "CONTENT-TYPE" not in actual_headers:
-            actual_headers["CONTENT-TYPE"] = content_type or "text/html"
+        if content_type or h("content-type") not in actual_headers:
+            actual_headers[h("content-type")] = content_type or "text/html"
 
         self._respond(200, msg, actual_headers)
 
@@ -235,17 +236,6 @@ class MyHandler(SimpleHTTPRequestHandler):
                 message = message.encode()
 
             self.wfile.write(message)
-
-    def load_user_sessions(self) -> Dict:
-        try:
-            with USER_SESSIONS.open("r") as fp:
-                return json.load(fp)
-        except (json.JSONDecodeError, FileNotFoundError):
-            return {}
-
-    def save_user_sessions(self, sessions: Dict) -> None:
-        with USER_SESSIONS.open("w") as fp:
-            json.dump(sessions, fp)
 
 
 if __name__ == "__main__":
