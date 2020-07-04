@@ -1,12 +1,15 @@
 import json
 import os
+import re
 import socketserver
 import traceback
 from datetime import datetime
+from functools import partial
 from http.server import SimpleHTTPRequestHandler
 from pathlib import Path
 from typing import Dict
 from typing import Optional
+from typing import Tuple
 from typing import Union
 from urllib.parse import parse_qs
 
@@ -21,6 +24,7 @@ PORT = int(os.getenv("PORT", 8000))
 PROJECT_DIR = Path(__file__).parent.parent.resolve()
 TEMPLATES_DIR = PROJECT_DIR / "templates"
 USER_SESSIONS = PROJECT_DIR / "sessions.json"
+PROJECTS = PROJECT_DIR / "projects.json"
 DEBUG = True
 
 print("*" * 80)
@@ -47,21 +51,22 @@ class MyHandler(SimpleHTTPRequestHandler):
 
     def dispatch(self, method: str):
         handlers = {
-            "": self.handle_index,
-            "/goodbye": self.handle_goodbye,
-            "/hello": self.handle_hello,
-            "/projects": self.handle_projects,
-            "/resume": self.handle_resume,
+            r"^$": self.handle_index,
+            r"^/goodbye$": self.handle_goodbye,
+            r"^/hello$": self.handle_hello,
+            r"^/project(/(?P<project_id>\w+))$": self.handle_projects,
+            r"^/project/(?P<project_id>\w+)/(?P<update>update)$": self.handle_projects_add,
+            r"^/project/(?P<project_id>\w+)/delete$": self.handle_project_delete,
+            r"^/projects$": self.handle_projects,
+            r"^/projects/add$": self.handle_projects_add,
+            r"^/resume$": self.handle_resume,
         }
+
         path = self.extract_path()
-
-        if path not in handlers:
-            raise UnknownPath(path)
-
-        handler = handlers[path]
+        handler, kwargs = self.get_handler(handlers, path)
 
         try:
-            handler(method)
+            handler(method, **kwargs)
         except NotFound:
             self.handle_404()
         except MethodNotAllowed:
@@ -70,28 +75,161 @@ class MyHandler(SimpleHTTPRequestHandler):
             self.handle_500()
             traceback.print_exc()
 
-    def handle_index(self, method: str):
+    @staticmethod
+    def get_handler(handlers, path) -> Tuple:
+        handler = None
+        kwargs = {}
+
+        for pattern, registered_handler in handlers.items():
+            match = re.match(pattern, path)
+            if not match:
+                continue
+
+            handler = registered_handler
+            kwargs = match.groupdict().copy()
+            break
+
+        if not handler:
+            raise UnknownPath(path)
+
+        return handler, kwargs
+
+    def handle_index(self, method: str, **kwargs):
         template = TEMPLATES_DIR / "index.html"
         html_template = get_static_content(template)
         html_base = get_static_content(TEMPLATES_DIR / "base.html")
         html = html_base.format(title="Learn Project", body=html_template)
         self.respond(html)
 
-    def handle_projects(self, method: str):
+    def handle_projects(self, method: str, **kwargs):
         template = TEMPLATES_DIR / "projects" / "index.html"
         html_template = get_static_content(template)
+        project_id = kwargs.get("project_id")
+        projects = self.render_projects(project_id)
+        html_template = html_template.format(projects=projects)
         html_base = get_static_content(TEMPLATES_DIR / "base.html")
         html = html_base.format(title="Projects :: Learn Project", body=html_template)
         self.respond(html)
 
-    def handle_resume(self, method: str):
+    def render_projects(self, project_id: Optional[str] = None) -> str:
+        if project_id:
+            return self.render_single_project(project_id)
+
+        projects = self.load_projects_file()
+        projects_str = "<ul>"
+        for existing_project_id, project in projects.items():
+            name = project["name"]
+            start = project["start"]
+            end = project.get("end", "now")
+            link = f'<a href="/project/{existing_project_id}">{name}</a>'
+            projects_str += f"<li>{link}: from {start} till {end}</li>"
+        projects_str += "</ul>"
+        return projects_str
+
+    def render_single_project(self, project_id: str) -> str:
+        projects = self.load_projects_file()
+        try:
+            project = projects[project_id]
+        except KeyError:
+            raise NotFound
+
+        name = project["name"]
+        start = project["start"]
+        end = project.get("end", "now")
+
+        html = get_static_content(TEMPLATES_DIR / "projects" / "add.html")
+        html = html.format(
+            value_action=f"/project/{project_id}/update/",
+            value_end=end,
+            value_name=name,
+            value_start=start,
+            value_submit="Update",
+        )
+
+        html += f"""
+        <form method="post" action="/project/{project_id}/delete/">
+            <button type="submit">Delete project</button>
+        </form>
+        """
+
+        return html
+
+    def handle_projects_add(self, method: str, **kwargs):
+        handlers = {
+            "get": self.handle_projects_add_get,
+            "post": self.handle_projects_add_post,
+        }
+        try:
+            handler = handlers[method]
+            return handler(**kwargs)
+        except KeyError:
+            raise MethodNotAllowed
+
+    def handle_projects_add_get(self, **kwargs):
+        html = get_static_content(TEMPLATES_DIR / "projects" / "add.html")
+        html = html.format(
+            value_action="/projects/add/",
+            value_name="",
+            value_start="",
+            value_end="",
+            value_submit="Add",
+        )
+        html_base = get_static_content(TEMPLATES_DIR / "base.html")
+        html = html_base.format(title="Projects :: Add Project", body=html)
+        self.respond(html)
+
+    def handle_projects_add_post(self, **kwargs):
+        form = self.get_form()
+        redirect = partial(self.redirect, "/projects/")
+
+        if not form:
+            redirect()
+
+        projects = self.load_projects_file()
+
+        if kwargs.get("update") == "update":
+            project_id = kwargs.get("project_id")
+            if not project_id:
+                raise NotFound
+
+            project = projects.get(project_id, form)
+            project.update(form)
+        else:
+            project_id = os.urandom(16).hex()
+            project = form
+
+        projects.update({project_id: project})
+        self.save_projects_file(projects)
+
+        redirect()
+
+    def handle_project_delete(self, method:str, **kwargs):
+        if method != "post":
+            raise MethodNotAllowed
+
+        projects = self.load_projects_file()
+
+        project_id = kwargs.get("project_id")
+        if not project_id:
+            raise NotFound
+
+        try:
+            del projects[project_id]
+        except KeyError:
+            pass
+
+        self.save_projects_file(projects)
+
+        self.redirect("/projects/")
+
+    def handle_resume(self, method: str, **kwargs):
         template = TEMPLATES_DIR / "resume" / "index.html"
         html_template = get_static_content(template)
         html_base = get_static_content(TEMPLATES_DIR / "base.html")
         html = html_base.format(title="Resume :: Learn Project", body=html_template)
         self.respond(html)
 
-    def handle_hello(self, method: str) -> None:
+    def handle_hello(self, method: str, **kwargs) -> None:
         handlers = {
             "get": self.handle_hello_get,
             "post": self.handle_hello_post,
@@ -102,7 +240,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         except KeyError:
             raise MethodNotAllowed
 
-    def handle_hello_get(self) -> None:
+    def handle_hello_get(self, **kwargs) -> None:
         session = self.load_user_session() or self.build_query_args()
         name = self.build_name(session)
         age = self.build_age(session)
@@ -120,14 +258,14 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         self.respond(html)
 
-    def handle_hello_post(self) -> None:
+    def handle_hello_post(self, **kwargs) -> None:
         form = self.get_form()
         session = self.load_user_session()
         session.update(form)
         session_id = self.save_user_session(session)
         self.redirect("/", headers={"Set-Cookie": f"SID={session_id}; Max-Age=120"})
 
-    def handle_goodbye(self, method: str) -> None:
+    def handle_goodbye(self, method: str, **kwargs) -> None:
         hour = datetime.now().hour
         tod = "dias" if hour in range(9, 19) else "noches"
         msg = f"Buenos {tod}"
@@ -169,6 +307,17 @@ class MyHandler(SimpleHTTPRequestHandler):
     def save_sessions_file(self, sessions):
         with USER_SESSIONS.open("w") as fp:
             json.dump(sessions, fp)
+
+    def load_projects_file(self) -> Dict:
+        try:
+            with PROJECTS.open("r") as fp:
+                return json.load(fp)
+        except (json.JSONDecodeError, FileNotFoundError):
+            return {}
+
+    def save_projects_file(self, projects) -> None:
+        with PROJECTS.open("w") as fp:
+            json.dump(projects, fp)
 
     def build_query_args(self) -> Dict:
         _path, *qs = self.path.split("?")
@@ -243,7 +392,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         actual_headers = headers or {}
         actual_headers = {h(header): value for header, value in actual_headers.items()}
         actual_headers.update({h("content-length"): str(len(msg))})
-        actual_headers.update({h("cache-control"): f"max-age={10 * 60}"})
+        # actual_headers.update({h("cache-control"): f"max-age={10 * 60}"})
 
         if content_type or h("content-type") not in actual_headers:
             actual_headers[h("content-type")] = content_type or "text/html"
