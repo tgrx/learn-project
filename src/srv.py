@@ -34,6 +34,8 @@ print(f"TEMPLATES_DIR = {TEMPLATES_DIR}")
 print(f"USER_SESSIONS = {USER_SESSIONS}")
 print(f"DEBUG = {DEBUG}")
 print("*" * 80)
+print(f"URL: http://localhost:{PORT}/")
+print("*" * 80)
 
 
 class MyHandler(SimpleHTTPRequestHandler):
