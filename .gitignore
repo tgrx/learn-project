@@ -1,4 +1,5 @@
 *$py.class
+**/db.sqlite3
 *.cover
 *.egg
 *.egg-info/

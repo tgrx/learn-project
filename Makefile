@@ -15,4 +15,4 @@ format:
 
 .PHONY: run
 run:
-	PYTHONPATH="${PYTHONPATH}" ${PY} -m srv
+	PYTHONPATH="${PYTHONPATH}" ${PY} src/manage.py runserver
