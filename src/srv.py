@@ -205,7 +205,7 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         redirect()
 
-    def handle_project_delete(self, method:str, **kwargs):
+    def handle_project_delete(self, method: str, **kwargs):
         if method != "post":
             raise MethodNotAllowed
 
