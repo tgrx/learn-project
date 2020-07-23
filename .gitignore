@@ -70,7 +70,6 @@ sdist/
 sessions.json
 share/python-wheels/
 stats.json
-target/
 var/
 venv.bak/
 venv/

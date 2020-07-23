@@ -267,12 +267,6 @@ class MyHandler(SimpleHTTPRequestHandler):
         session_id = self.save_user_session(session)
         self.redirect("/", headers={"Set-Cookie": f"SID={session_id}; Max-Age=120"})
 
-    def handle_goodbye(self, method: str, **kwargs) -> None:
-        hour = datetime.now().hour
-        tod = "dias" if hour in range(9, 19) else "noches"
-        msg = f"Buenos {tod}"
-        self.respond(msg)
-
     def get_session_id(self) -> Union[str, None]:
         cookie = self.headers.get("Cookie")
         if not cookie:

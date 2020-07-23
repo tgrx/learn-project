@@ -1,16 +1,11 @@
 from django.contrib import admin
+from django.urls import include
 from django.urls import path
 
-from project.views import handle_goodbye
-from project.views import handle_hello
-from project.views import handle_lesson
-from project.views import handle_projects
-
 urlpatterns = [
+    path("", include("applications.target.urls")),
     path("admin/", admin.site.urls),
-    path("css/", handle_lesson),
-    path("goodbye/", handle_goodbye),
-    path("hello/", handle_hello),
-    path("projects/", handle_projects),
-    path("projects/<str:project_id>/", handle_projects),
+    path("goodbye/", include("applications.goodbye.urls")),
+    path("hello/", include("applications.hello.urls")),
+    path("projects/", include("applications.projects.urls")),
 ]

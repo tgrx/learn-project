@@ -21,6 +21,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "applications.goodbye.apps.GoodbyeConfig",
+    "applications.hello.apps.HelloConfig",
+    "applications.projects.apps.ProjectsConfig",
+    "applications.target.apps.TargetConfig",
 ]
 
 MIDDLEWARE = [
@@ -38,7 +42,7 @@ ROOT_URLCONF = "project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [PROJECT_DIR / "templates",],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -64,9 +68,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", },
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator", },
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator", },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
 LANGUAGE_CODE = "en-us"

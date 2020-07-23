@@ -1,0 +1,15 @@
+{% extends "_base.html" %}
+
+{% block title %}
+    Goodbye page
+{% endblock %}
+
+
+{% block body %}
+
+    <div style="{% if tod == "dias" %}color: red; background-color: black{% else %}color: blue; background-color: green{% endif %}">
+        <h1>Buenos {{ tod }}!</h1>
+    </div>
+
+
+{% endblock %}
