@@ -78,7 +78,9 @@ class Model:
         self.pk = os.urandom(16).hex()
 
     @classmethod
-    def _build_objects(cls, predicate: Callable = lambda _x: 1) -> Generator["Model", None, None]:
+    def _build_objects(
+        cls, predicate: Callable = lambda _x: 1
+    ) -> Generator["Model", None, None]:
         content = cls._load_content()
 
         result = (cls(**kw) for kw in cls._build_kws(content, predicate))
@@ -86,7 +88,9 @@ class Model:
         yield from result
 
     @classmethod
-    def _build_kws(cls, content: Dict, predicate: Callable = lambda _x: 1) -> Generator[Dict, None, None]:
+    def _build_kws(
+        cls, content: Dict, predicate: Callable = lambda _x: 1
+    ) -> Generator[Dict, None, None]:
         for object_id, fields in filter(predicate, content.items()):
             kw = {}
             for field, field_params in cls.__dataclass_fields__.items():

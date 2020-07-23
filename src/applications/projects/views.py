@@ -1,13 +1,10 @@
 from dataclasses import asdict
 
 from django import forms
-from django.conf import settings
 from django.views.generic import FormView
 from django.views.generic import RedirectView
 
 from applications.projects.models import Project
-
-PROJECTS = settings.REPO_DIR / "projects.json"
 
 
 class ProjectForm(forms.Form):

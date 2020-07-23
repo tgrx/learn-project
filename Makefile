@@ -9,7 +9,7 @@ PY := ${RUN} python
 
 .PHONY: format
 format:
-	${RUN} isort --virtual-env "${VENV}" --recursive --apply "${HERE}"
+	${RUN} isort --virtual-env "${VENV}" "${HERE}"
 	${RUN} black "${HERE}"
 
 
