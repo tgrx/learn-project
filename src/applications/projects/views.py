@@ -1,6 +1,9 @@
+from dataclasses import asdict
+
 from django import forms
 from django.conf import settings
 from django.views.generic import FormView
+from django.views.generic import RedirectView
 
 from applications.projects.models import Project
 
@@ -30,17 +33,57 @@ class AllProjectsView(FormView):
         return ctx
 
 
-class SingleProjectView(FormView):
+class SingleObjectMixin:
+    model = None
+
+    def get_object_id(self):
+        return self.kwargs["project_id"]
+
+    def get_object(self):
+        object_id = self.get_object_id()
+        return self.model.one(object_id)
+
+
+class SingleProjectView(SingleObjectMixin, FormView):
+    model = Project
     template_name = "projects/single_project.html"
     form_class = ProjectForm
     success_url = "/projects/"
 
+    def get_initial(self):
+        project = self.get_object()
+        dct = asdict(project)
+        try:
+            del dct["pk"]
+        except KeyError:
+            pass
+        return dct
+
+    def get_success_url(self):
+        project_id = self.get_object_id()
+        return f"/projects/{project_id}/"
+
     def form_valid(self, form):
+        project = self.get_object()
+        for attr, value in form.cleaned_data.items():
+            setattr(project, attr, value)
+        project.save()
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        project_id = self.kwargs["project_id"]
-        project = Project.one(project_id)
+        project = self.get_object()
         ctx["object"] = project
         return ctx
+
+
+class DeleteProjectView(SingleObjectMixin, RedirectView):
+    model = Project
+    permanent = True
+    http_method_names = ["post"]
+
+    def get_redirect_url(self, *args, **kwargs):
+        project = self.get_object()
+        project.delete()
+
+        return "/projects/"
