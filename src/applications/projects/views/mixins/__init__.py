@@ -1,0 +1,1 @@
+from .singleobj import SingleObjectMixin

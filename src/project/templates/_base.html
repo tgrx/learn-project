@@ -38,7 +38,7 @@
     <ul>
         <li><a href="{% url "hello:index" %}">Hello</a></li>
         <li><a href="{% url "theme:index" %}">Theme</a></li>
-        <li><a href="{% url "projects:all_projects" %}">Projects</a></li>
+        <li><a href="{% url "projects:all" %}">Projects</a></li>
     </ul>
     <form action="{% url "theme:switch" %}" method="post">
         <input type="hidden" name="origin" value="{{ request.path }}">
