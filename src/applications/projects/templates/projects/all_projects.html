@@ -5,7 +5,7 @@
     <div class="all">
             {% for project in object_list %}
                 <article>
-                    <a href="/projects/{{ project.pk }}/"><h2>{{ project.name }}</h2></a>
+                    <a href="{% url 'projects:single_project' project.pk %}"><h2>{{ project.name }}</h2></a>
                     <strong>{{ project.started }} ~ {{ project.ended }}</strong>
                     <hr>
                     <p>{{ project.description }}</p>

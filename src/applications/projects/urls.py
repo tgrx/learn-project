@@ -8,9 +8,11 @@ from applications.projects.views import SingleProjectView
 app_name = ProjectsConfig.label
 
 urlpatterns = [
-    path("", AllProjectsView.as_view(), name="all_projects"),
-    path("<str:project_id>/", SingleProjectView.as_view(), name="single_project"),
+    path("bcv/", AllProjectsView.as_view(), name="all_projects"),
+    path("bcv/<str:project_id>/", SingleProjectView.as_view(), name="single_project"),
     path(
-        "<str:project_id>/delete/", DeleteProjectView.as_view(), name="delete_project"
+        "bcv/<str:project_id>/delete/",
+        DeleteProjectView.as_view(),
+        name="delete_project",
     ),
 ]

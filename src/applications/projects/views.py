@@ -1,6 +1,7 @@
 from dataclasses import asdict
 
 from django import forms
+from django.urls import reverse_lazy
 from django.views.generic import FormView
 from django.views.generic import RedirectView
 
@@ -45,7 +46,6 @@ class SingleProjectView(SingleObjectMixin, FormView):
     model = Project
     template_name = "projects/single_project.html"
     form_class = ProjectForm
-    success_url = "/projects/"
 
     def get_initial(self):
         project = self.get_object()
@@ -58,7 +58,9 @@ class SingleProjectView(SingleObjectMixin, FormView):
 
     def get_success_url(self):
         project_id = self.get_object_id()
-        return f"/projects/{project_id}/"
+        return reverse_lazy(
+            "projects:single_project", kwargs={"project_id": project_id}
+        )
 
     def form_valid(self, form):
         project = self.get_object()
