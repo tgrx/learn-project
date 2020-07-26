@@ -24,6 +24,7 @@ class Model:
     pk: Optional[str] = None
 
     __json_file__ = None
+    __storage__: Path = (settings.REPO_DIR / "storage").resolve()
 
     @classmethod
     def all(cls) -> Tuple["Model"]:
@@ -39,27 +40,23 @@ class Model:
         return obj
 
     def save(self) -> None:
+        content = self._load()
+
         self._setup_pk()
-
-        content = self._load_content()
         dct = asdict(self)
-
-        try:
-            del dct["pk"]
-        except KeyError:
-            pass
-
+        self._shadow_pk(dct)
         content[self.pk] = dct
-        self._store_content(content)
+
+        self._store(content)
 
     def delete(self) -> None:
-        content = self._load_content()
+        content = self._load()
 
         if self.pk not in content:
             return
 
         del content[self.pk]
-        self._store_content(content)
+        self._store(content)
 
         self.pk = None
 
@@ -67,8 +64,7 @@ class Model:
     def source(cls) -> Path:
         if not cls.__json_file__:
             raise TypeError(f"unbound source for {cls}")
-        src: Path = settings.REPO_DIR / "storage" / cls.__json_file__
-        src = src.resolve()
+        src = (cls.__storage__ / cls.__json_file__).resolve()
         return src
 
     def _setup_pk(self):
@@ -77,11 +73,18 @@ class Model:
 
         self.pk = os.urandom(16).hex()
 
+    @staticmethod
+    def _shadow_pk(dct: Dict) -> None:
+        try:
+            del dct["pk"]
+        except KeyError:
+            pass
+
     @classmethod
     def _build_objects(
         cls, predicate: Callable = lambda _x: 1
     ) -> Generator["Model", None, None]:
-        content = cls._load_content()
+        content = cls._load()
 
         result = (cls(**kw) for kw in cls._build_kws(content, predicate))
 
@@ -101,7 +104,7 @@ class Model:
             yield kw
 
     @classmethod
-    def _load_content(cls) -> Dict:
+    def _load(cls) -> Dict:
         try:
             with cls.source().open("r") as src:
                 payload = src.read()
@@ -119,7 +122,7 @@ class Model:
         return content
 
     @classmethod
-    def _store_content(cls, content: Dict) -> None:
+    def _store(cls, content: Dict) -> None:
         cleaned_content = cls._clean_content(content)
         with cls.source().open("w") as dst:
             json.dump(cleaned_content, dst)

@@ -1,21 +1,16 @@
 {% extends "_base.html" %}
-
 {% block title %}Hello{% endblock %}
-
-
 {% block body %}
     <h1>Welcome!</h1>
     <h2>Hello, {{ name }}!</h2>
-
     {% if birth_year %}
         <h2>You was born at {{ birth_year }}</h2>
     {% else %}
         <h2>Cannot know when you were born</h2>
     {% endif %}
-
     <form method="post">
+        {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Send</button>
     </form>
-
 {% endblock %}

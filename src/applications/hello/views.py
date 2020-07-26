@@ -1,42 +1,45 @@
 from datetime import datetime
+from typing import NamedTuple
+from typing import Optional
 
-from django import forms
+from django.urls import reverse_lazy
 from django.views.generic import FormView
 
+from applications.hello.forms import HelloForm
 from project.utils import build_age
 from project.utils import build_name
 from project.utils import build_query_args
 from project.utils import load_user_session
 
 
-class HelloForm(forms.Form):
-    name = forms.CharField(max_length=200, required=True)
-    age = forms.IntegerField(required=False)
+class HelloT(NamedTuple):
+    name: str
+    age: Optional[int]
 
 
 class IndexView(FormView):
     template_name = "hello/index.html"
-    success_url = "/hello/"
+    success_url = reverse_lazy("hello:index")
     form_class = HelloForm
 
     def get_initial(self):
-        name, age = self.build_name_age()
+        data = self.build_name_age()
         return {
-            "name": name or "",
-            "age": age or None,
+            "name": data.name or "",
+            "age": data.age or None,
         }
 
     def get_context_data(self, **kwargs):
         parent_context = super().get_context_data(**kwargs)
 
-        name, age = self.build_name_age()
+        data = self.build_name_age()
 
         year = None
-        if age is not None:
-            year = datetime.now().year - age
+        if data.age is not None:
+            year = datetime.now().year - data.age
 
         local_context = {
-            "name": name,
+            "name": data.name,
             "birth_year": year,
         }
         local_context.update(parent_context)
@@ -48,8 +51,8 @@ class IndexView(FormView):
         self.request.session["age"] = form.cleaned_data["age"]
         return super().form_valid(form)
 
-    def build_name_age(self):
+    def build_name_age(self) -> HelloT:
         session = load_user_session(self.request) or build_query_args(self.request)
         name = build_name(session)
         age = build_age(session)
-        return name, age
+        return HelloT(name=name, age=age)
