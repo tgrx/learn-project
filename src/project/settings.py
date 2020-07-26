@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "applications.hello.apps.HelloConfig",
     "applications.projects.apps.ProjectsConfig",
+    "applications.stats.apps.StatsConfig",
     "applications.target.apps.TargetConfig",
     "applications.theme.apps.ThemeConfig",
 ]

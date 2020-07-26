@@ -1,9 +1,11 @@
 from django.views.generic import TemplateView
 
+from applications.stats.utils import count_stats
 from applications.theme.custom_types import ThemeT
 from applications.theme.views.mixins import ThemeMixin
 
 
+@count_stats
 class IndexView(ThemeMixin, TemplateView):
     template_name = "theme/index.html"
 

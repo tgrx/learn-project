@@ -4,8 +4,10 @@ from django.views.generic import FormView
 from applications.projects.forms import ProjectForm
 from applications.projects.models import Project
 from applications.projects.views.mixins import SingleObjectMixin
+from applications.stats.utils import count_stats
 
 
+@count_stats
 class SingleProjectView(SingleObjectMixin, FormView):
     form_class = ProjectForm
     model = Project

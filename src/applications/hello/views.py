@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import FormView
 
 from applications.hello.forms import HelloForm
+from applications.stats.utils import count_stats
 from project.utils import build_age
 from project.utils import build_name
 from project.utils import build_query_args
@@ -17,6 +18,7 @@ class HelloT(NamedTuple):
     age: Optional[int]
 
 
+@count_stats
 class IndexView(FormView):
     template_name = "hello/index.html"
     success_url = reverse_lazy("hello:index")

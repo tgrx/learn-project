@@ -23,12 +23,50 @@
 
         .bright {
             background-color: white;
-            color: red;
+            color: darkblue;
         }
 
         .dark {
             background-color: black;
             color: white;
+        }
+
+        .stats-container {
+            display: grid;
+            font-size: 0.8rem;
+            font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+            grid-template-columns: [at] 20% [method] 10% [code] 10% [tm] 10% [url] 50%;
+            grid-template-rows: auto;
+        }
+
+        .si {
+            padding: 0;
+            margin: 0;
+        }
+
+        .sa {
+            grid-column-start: 1;
+            grid-column-end: 2;
+        }
+
+        .sm {
+            grid-column-start: 2;
+            grid-column-end: 3;
+        }
+
+        .sc {
+            grid-column-start: 3;
+            grid-column-end: 4;
+        }
+
+        .st {
+            grid-column-start: 4;
+            grid-column-end: 5;
+        }
+
+        .su {
+            grid-column-start: 5;
+            grid-column-end: 6;
         }
     </style>
 </head>
@@ -37,10 +75,12 @@
     <h1><a href="{% url "target:index" %}">My Page</a></h1>
     <ul>
         <li><a href="{% url "hello:index" %}">Hello</a></li>
-        <li><a href="{% url "theme:index" %}">Theme</a></li>
         <li><a href="{% url "projects:all" %}">Projects</a></li>
+        <li><a href="{% url "stats:index" %}">Stats</a></li>
+        <li><a href="{% url "theme:index" %}">Theme</a></li>
     </ul>
     <form action="{% url "theme:switch" %}" method="post">
+        {% csrf_token %}
         <input type="hidden" name="origin" value="{{ request.path }}">
         <button type="submit">Switch to {{ theme_next.value }}</button>
     </form>

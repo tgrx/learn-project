@@ -3,8 +3,10 @@ from django.views.generic import RedirectView
 
 from applications.projects.models import Project
 from applications.projects.views.mixins import SingleObjectMixin
+from applications.stats.utils import count_stats
 
 
+@count_stats
 class DeleteProjectView(SingleObjectMixin, RedirectView):
     http_method_names = ["post"]
     model = Project

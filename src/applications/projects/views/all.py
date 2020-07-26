@@ -3,8 +3,10 @@ from django.views.generic import FormView
 
 from applications.projects.forms import ProjectForm
 from applications.projects.models import Project
+from applications.stats.utils import count_stats
 
 
+@count_stats
 class AllProjectsView(FormView):
     template_name = "projects/all.html"
     form_class = ProjectForm

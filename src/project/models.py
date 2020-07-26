@@ -24,7 +24,7 @@ class Model:
     pk: Optional[str] = None
 
     __json_file__ = None
-    __storage__: Path = (settings.REPO_DIR / "storage").resolve()
+    __storage__ = (settings.REPO_DIR / "storage").resolve()
 
     @classmethod
     def all(cls) -> Tuple["Model"]:
@@ -61,6 +61,10 @@ class Model:
         self.pk = None
 
     @classmethod
+    def delete_all(cls) -> None:
+        cls._store({})
+
+    @classmethod
     def source(cls) -> Path:
         if not cls.__json_file__:
             raise TypeError(f"unbound source for {cls}")
@@ -82,7 +86,7 @@ class Model:
 
     @classmethod
     def _build_objects(
-        cls, predicate: Callable = lambda _x: 1
+            cls, predicate: Callable = lambda _x: 1
     ) -> Generator["Model", None, None]:
         content = cls._load()
 
@@ -92,7 +96,7 @@ class Model:
 
     @classmethod
     def _build_kws(
-        cls, content: Dict, predicate: Callable = lambda _x: 1
+            cls, content: Dict, predicate: Callable = lambda _x: 1
     ) -> Generator[Dict, None, None]:
         for object_id, fields in filter(predicate, content.items()):
             kw = {}
@@ -140,16 +144,26 @@ class Model:
         result = {}
 
         for key, value in content.items():
-            if isinstance(value, (date, datetime)):
-                value = value.strftime("%Y-%m-%d")
+            if isinstance(value, datetime):
+                new_value = value.strftime("%Y-%m-%d %H:%M:%S")
+            elif isinstance(value, date):
+                new_value = value.strftime("%Y-%m-%d")
             elif isinstance(value, dict):
-                value = cls._clean_content(value)
-            result[key] = value
+                new_value = cls._clean_content(value)
+            else:
+                new_value = value
+
+            result[key] = new_value
 
         return result
 
     @classmethod
     def _build_value(cls, value, field_type):
         if issubclass(date, field_type.__args__):
-            return datetime.strptime(value, "%Y-%m-%d").date()
-        return value
+            new_value = datetime.strptime(value, "%Y-%m-%d").date()
+        elif issubclass(datetime, field_type.__args__):
+            new_value = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+        else:
+            new_value = value
+
+        return new_value

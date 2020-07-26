@@ -1,0 +1,23 @@
+{% extends "_base.html" %}
+{% block title %}Stats{% endblock %}
+{% block body %}
+    <h1>Statistics</h1>
+    <form action="{% url "stats:reset" %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Reset</button>
+    </form>
+    <div class="stats-container">
+        <p class="stats-header sa">AT</p>
+        <p class="stats-header sm">METHOD</p>
+        <p class="stats-header sc">CODE</p>
+        <p class="stats-header st">TIME</p>
+        <p class="stats-header su">URL</p>
+        {% for visit in object_list %}
+            <p class="si sa">{{ visit.at|date:'Y-m-d H:i:s' }}</p>
+            <p class="si sm">{{ visit.method }}</p>
+            <p class="si sc">{{ visit.code }}</p>
+            <p class="si st">{{ visit.tm|floatformat:"0" }}</p>
+            <p class="si su">{{ visit.url }}</p>
+        {% endfor %}
+    </div>
+{% endblock %}
