@@ -10,7 +10,7 @@ def count_stats(view):
     class ViewWithStats(view):
         def dispatch(self, *args, **kwargs):
             t0 = datetime.now()
-            code = None
+            code = 500
             try:
                 resp: HttpResponse = super().dispatch(*args, **kwargs)
                 code = resp.status_code

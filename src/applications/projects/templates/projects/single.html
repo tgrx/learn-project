@@ -9,6 +9,7 @@
             <hr>
             <p>{{ object.description }}</p>
             <form method="post" action="{% url 'projects:delete' object.pk %}">
+                {% csrf_token %}
                 <button type="submit">Delete</button>
             </form>
         </article>
