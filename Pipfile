@@ -13,6 +13,7 @@ pudb = "*"
 
 [packages]
 django = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.8"

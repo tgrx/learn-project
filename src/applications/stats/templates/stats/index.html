@@ -2,6 +2,29 @@
 {% block title %}Stats{% endblock %}
 {% block body %}
     <h1>Statistics</h1>
+    {% if dashboard %}
+        <div class="dashboard">
+            <div class="dashboard-item">
+                <p><h2>Latency</h2></p>
+                <ul>
+                    <li>5m: {{ dashboard.latency.m05.avg|floatformat:"0" }} ({{ dashboard.latency.m05.max|floatformat:"0" }})</li>
+                    <li>15m: {{ dashboard.latency.m15.avg|floatformat:"0" }} ({{ dashboard.latency.m15.max|floatformat:"0" }})</li>
+                    <li>1h: {{ dashboard.latency.h01.avg|floatformat:"0" }} ({{ dashboard.latency.h01.max|floatformat:"0" }})</li>
+                    <li>24h: {{ dashboard.latency.h24.avg|floatformat:"0" }} ({{ dashboard.latency.h24.max|floatformat:"0" }})</li>
+                </ul>
+            </div>
+            <div class="dashboard-item">
+                <p><h2>Traffic</h2></p>
+                <ul>
+                    <li>5m: {{ dashboard.traffic.m05.avg|floatformat:"0" }} ({{ dashboard.traffic.m05.max|floatformat:"0" }})</li>
+                    <li>15m: {{ dashboard.traffic.m15.avg|floatformat:"0" }} ({{ dashboard.traffic.m15.max|floatformat:"0" }})</li>
+                    <li>1h: {{ dashboard.traffic.h01.avg|floatformat:"0" }} ({{ dashboard.traffic.h01.max|floatformat:"0" }})</li>
+                    <li>24h: {{ dashboard.traffic.h24.avg|floatformat:"0" }} ({{ dashboard.traffic.h24.max|floatformat:"0" }})</li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+    {% endif %}
     <form action="{% url "stats:reset" %}" method="post">
         {% csrf_token %}
         <button type="submit">Reset</button>
@@ -10,13 +33,15 @@
         <p class="stats-header sa">AT</p>
         <p class="stats-header sm">METHOD</p>
         <p class="stats-header sc">CODE</p>
-        <p class="stats-header st">TIME</p>
+        <p class="stats-header st">MS</p>
+        <p class="stats-header cl">KB</p>
         <p class="stats-header su">URL</p>
         {% for visit in object_list %}
             <p class="si sa">{{ visit.at|date:'Y-m-d H:i:s' }}</p>
             <p class="si sm">{{ visit.method }}</p>
             <p class="si sc">{{ visit.code }}</p>
             <p class="si st">{{ visit.tm|floatformat:"0" }}</p>
+            <p class="si cl">{{ visit.cl|floatformat:"2" }}</p>
             <p class="si su">{{ visit.url }}</p>
         {% endfor %}
     </div>

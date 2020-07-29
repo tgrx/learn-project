@@ -14,6 +14,7 @@ class IndexView(TemplateView):
         ctx = super().get_context_data(**kwargs)
 
         ctx["object_list"] = sorted(Visit.all(), key=lambda v: -v.at.timestamp())
+        ctx["dashboard"] = Visit.generate_dashboard()
 
         return ctx
 
