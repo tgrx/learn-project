@@ -12,6 +12,7 @@ isort = "*"
 pudb = "*"
 
 [packages]
+delorean = "*"
 django = "*"
 pandas = "*"
 

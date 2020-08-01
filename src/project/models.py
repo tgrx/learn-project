@@ -20,18 +20,17 @@ class ModelError(Exception):
 
 
 @dataclass
-class Model:
+class JsonModel:
     pk: Optional[str] = None
 
-    __json_file__ = None
     __storage__ = (settings.REPO_DIR / "storage").resolve()
 
     @classmethod
-    def all(cls) -> Tuple["Model"]:
+    def all(cls) -> Tuple["JsonModel"]:
         return tuple(cls._build_objects())
 
     @classmethod
-    def one(cls, object_id) -> Union["Model", None]:
+    def one(cls, object_id) -> Union["JsonModel", None]:
         try:
             obj = next(cls._build_objects(lambda record: record[0] == object_id))
         except StopIteration:
@@ -66,9 +65,8 @@ class Model:
 
     @classmethod
     def source(cls) -> Path:
-        if not cls.__json_file__:
-            raise TypeError(f"unbound source for {cls}")
-        src = (cls.__storage__ / cls.__json_file__).resolve()
+        json_file = f"{cls.__name__.lower()}.json"
+        src = (cls.__storage__ / json_file).resolve()
         return src
 
     def _setup_pk(self):
@@ -86,8 +84,8 @@ class Model:
 
     @classmethod
     def _build_objects(
-            cls, predicate: Callable = lambda _x: 1
-    ) -> Generator["Model", None, None]:
+        cls, predicate: Callable = lambda _x: 1
+    ) -> Generator["JsonModel", None, None]:
         content = cls._load()
 
         result = (cls(**kw) for kw in cls._build_kws(content, predicate))
@@ -96,7 +94,7 @@ class Model:
 
     @classmethod
     def _build_kws(
-            cls, content: Dict, predicate: Callable = lambda _x: 1
+        cls, content: Dict, predicate: Callable = lambda _x: 1
     ) -> Generator[Dict, None, None]:
         for object_id, fields in filter(predicate, content.items()):
             kw = {}

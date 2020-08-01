@@ -65,11 +65,9 @@ pip-delete-this-directory.txt
 pip-log.txt
 pip-wheel-metadata/
 profile_default/
-projects.json
 sdist/
-sessions.json
 share/python-wheels/
-stats.json
+storage/*.json
 var/
 venv.bak/
 venv/

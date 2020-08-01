@@ -7,19 +7,35 @@
             <div class="dashboard-item">
                 <p><h2>Latency</h2></p>
                 <ul>
-                    <li>5m: {{ dashboard.latency.m05.avg|floatformat:"0" }} ({{ dashboard.latency.m05.max|floatformat:"0" }})</li>
-                    <li>15m: {{ dashboard.latency.m15.avg|floatformat:"0" }} ({{ dashboard.latency.m15.max|floatformat:"0" }})</li>
-                    <li>1h: {{ dashboard.latency.h01.avg|floatformat:"0" }} ({{ dashboard.latency.h01.max|floatformat:"0" }})</li>
-                    <li>24h: {{ dashboard.latency.h24.avg|floatformat:"0" }} ({{ dashboard.latency.h24.max|floatformat:"0" }})</li>
+                    <li>5m: {{ dashboard.latency.m05.avg|floatformat:"0" }}
+                        ({{ dashboard.latency.m05.max|floatformat:"0" }})
+                    </li>
+                    <li>15m: {{ dashboard.latency.m15.avg|floatformat:"0" }}
+                        ({{ dashboard.latency.m15.max|floatformat:"0" }})
+                    </li>
+                    <li>1h: {{ dashboard.latency.h01.avg|floatformat:"0" }}
+                        ({{ dashboard.latency.h01.max|floatformat:"0" }})
+                    </li>
+                    <li>24h: {{ dashboard.latency.h24.avg|floatformat:"0" }}
+                        ({{ dashboard.latency.h24.max|floatformat:"0" }})
+                    </li>
                 </ul>
             </div>
             <div class="dashboard-item">
                 <p><h2>Traffic</h2></p>
                 <ul>
-                    <li>5m: {{ dashboard.traffic.m05.avg|floatformat:"0" }} ({{ dashboard.traffic.m05.max|floatformat:"0" }})</li>
-                    <li>15m: {{ dashboard.traffic.m15.avg|floatformat:"0" }} ({{ dashboard.traffic.m15.max|floatformat:"0" }})</li>
-                    <li>1h: {{ dashboard.traffic.h01.avg|floatformat:"0" }} ({{ dashboard.traffic.h01.max|floatformat:"0" }})</li>
-                    <li>24h: {{ dashboard.traffic.h24.avg|floatformat:"0" }} ({{ dashboard.traffic.h24.max|floatformat:"0" }})</li>
+                    <li>5m: {{ dashboard.traffic.m05.avg|floatformat:"0" }}
+                        ({{ dashboard.traffic.m05.max|floatformat:"0" }})
+                    </li>
+                    <li>15m: {{ dashboard.traffic.m15.avg|floatformat:"0" }}
+                        ({{ dashboard.traffic.m15.max|floatformat:"0" }})
+                    </li>
+                    <li>1h: {{ dashboard.traffic.h01.avg|floatformat:"0" }}
+                        ({{ dashboard.traffic.h01.max|floatformat:"0" }})
+                    </li>
+                    <li>24h: {{ dashboard.traffic.h24.avg|floatformat:"0" }}
+                        ({{ dashboard.traffic.h24.max|floatformat:"0" }})
+                    </li>
                 </ul>
             </div>
         </div>

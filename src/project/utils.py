@@ -4,7 +4,6 @@ from typing import Dict
 from typing import Union
 from urllib.parse import parse_qs
 
-from django.conf import settings
 from django.http import Http404
 from django.http import HttpRequest
 
@@ -98,32 +97,7 @@ def get_static_content(file_path: Union[str, Path]) -> Union[str, bytes]:
     return ct
 
 
-def _count_visits(path):
-    stats_file: Path = settings.REPO_DIR / "stats.json"
-    stats = {}
-
-    if stats_file.is_file():
-        try:
-            with stats_file.open("r") as fp:
-                stats = json.load(fp)
-        except json.JSONDecodeError:
-            pass
-
-    if path not in stats:
-        stats[path] = 0
-
-    stats[path] += 1
-
-    with stats_file.open("w") as fp:
-        json.dump(stats, fp)
-
-
-def count_visits(view):
-    def _view(request: HttpRequest, *a, **k):
-        try:
-            resp = view(request, *a, **k)
-            return resp
-        finally:
-            _count_visits(request.path)
-
-    return _view
+def asdict(obj) -> Dict[str, object]:
+    fields = (_f.name for _f in obj._meta.fields)
+    result = {field: getattr(obj, field) for field in fields}
+    return result

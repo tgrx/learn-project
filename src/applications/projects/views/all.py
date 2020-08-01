@@ -19,5 +19,5 @@ class AllProjectsView(FormView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["object_list"] = Project.all()
+        ctx["object_list"] = Project.objects.all()
         return ctx

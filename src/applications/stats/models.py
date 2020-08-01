@@ -1,12 +1,12 @@
-from dataclasses import dataclass
-from datetime import datetime
 from datetime import timedelta
 from typing import NamedTuple
 from typing import Optional
 
+from delorean import Delorean
+from django.db import models
 from pandas import DataFrame
 
-from project.models import Model
+from project.utils import asdict
 
 
 class MinMaxT(NamedTuple):
@@ -27,20 +27,17 @@ class DashboardT(NamedTuple):
     traffic: HourlyT
 
 
-@dataclass
-class Visit(Model):
-    at: Optional[datetime] = None
-    cl: Optional[int] = None
-    code: Optional[int] = None
-    method: Optional[str] = None
-    tm: Optional[float] = None
-    url: Optional[str] = None
-
-    __json_file__ = "stats.json"
+class Visit(models.Model):
+    at = models.DateTimeField()
+    cl = models.PositiveIntegerField()
+    code = models.PositiveIntegerField()
+    method = models.TextField()
+    tm = models.FloatField()
+    url = models.URLField()
 
     @classmethod
     def generate_dashboard(cls) -> Optional[DashboardT]:
-        df = DataFrame(Visit.all())
+        df = DataFrame(map(asdict, Visit.objects.all()))
         if "at" not in df:
             return None
 
@@ -49,12 +46,12 @@ class Visit(Model):
         except KeyError:
             pass
 
-        ts_now = datetime.now()
+        ts_now = Delorean()
         params = {}
 
         for measure_attr, minutes in zip(HourlyT.__annotations__, (5, 15, 60, 60 * 24)):
             delta = timedelta(minutes=minutes)
-            ts = ts_now - delta
+            ts = (ts_now - delta).datetime
 
             for dimension_attr, dimension in {"latency": "tm", "traffic": "cl"}.items():
                 max_value = df.where(df["at"] >= ts).max()[dimension]

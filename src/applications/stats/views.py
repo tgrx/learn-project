@@ -13,7 +13,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
-        ctx["object_list"] = sorted(Visit.all(), key=lambda v: -v.at.timestamp())
+        ctx["object_list"] = Visit.objects.order_by("-at").all()
         ctx["dashboard"] = Visit.generate_dashboard()
 
         return ctx
@@ -23,5 +23,5 @@ class ResetView(RedirectView):
     http_method_names = ["post"]
 
     def get_redirect_url(self, *args, **kwargs):
-        Visit.delete_all()
+        Visit.objects.all().delete()
         return reverse_lazy("stats:index")

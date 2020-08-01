@@ -5,6 +5,7 @@ from applications.projects.forms import ProjectForm
 from applications.projects.models import Project
 from applications.projects.views.mixins import SingleObjectMixin
 from applications.stats.utils import count_stats
+from project.utils import asdict
 
 
 @count_stats
@@ -14,8 +15,7 @@ class SingleProjectView(SingleObjectMixin, FormView):
     template_name = "projects/single.html"
 
     def get_initial(self):
-        dct = self.get_object_dct()
-        self.shadow_pk(dct)
+        dct = asdict(self.get_object())
         return dct
 
     def get_success_url(self):
