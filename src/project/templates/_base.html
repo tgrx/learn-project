@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}BASE{% endblock %}</title>
+    <title>Z01: {% block title %}Unknown page{% endblock %}</title>
     <style>
         article {
             border: 1px darkseagreen solid;
@@ -73,17 +73,46 @@
             grid-column-start: 6;
             grid-column-end: 7;
         }
+
+        .nav {
+            display: grid;
+            grid-template-columns: auto;
+            grid-template-rows: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .nav li {
+            grid-row: 1;
+            display: inline;
+            padding-right: 2rem;
+        }
+
+        .nav li:after {
+            content: "|";
+            margin-left: 2rem;
+        }
+
+        .nav li:first-of-type {
+            margin-left: 0;
+        }
+
+        .nav li:last-of-type:after {
+            content: "";
+            margin-left: 0;
+        }
     </style>
 </head>
 <body class="{{ theme.value }}">
 <div>
-    <h1><a href="{% url "target:index" %}">My Page</a></h1>
-    <ul>
-        <li><a href="{% url "hello:index" %}">Hello</a></li>
-        <li><a href="{% url "projects:all" %}">Projects</a></li>
-        <li><a href="{% url "stats:index" %}">Stats</a></li>
-        <li><a href="{% url "theme:index" %}">Theme</a></li>
-    </ul>
+    <h1><a href="{% url "target:index" %}">Training Project</a></h1>
+    <div class="nav">
+        <ul>
+            <li><a href="{% url "hello:index" %}">Hello</a></li>
+            <li><a href="{% url "projects:all" %}">Projects</a></li>
+            <li><a href="{% url "stats:index" %}">Stats</a></li>
+            <li><a href="{% url "theme:index" %}">Theme</a></li>
+        </ul>
+    </div>
     <form action="{% url "theme:switch" %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="origin" value="{{ request.path }}">
@@ -91,6 +120,6 @@
     </form>
 </div>
 <hr>
-{% block body %}XXX{% endblock %}
+{% block body %}No content{% endblock %}
 </body>
 </html>

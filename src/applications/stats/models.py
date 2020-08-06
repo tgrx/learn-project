@@ -28,12 +28,12 @@ class DashboardT(NamedTuple):
 
 
 class Visit(models.Model):
-    at = models.DateTimeField()
-    cl = models.PositiveIntegerField()
-    code = models.PositiveIntegerField()
-    method = models.TextField()
-    tm = models.FloatField()
-    url = models.URLField()
+    at = models.DateTimeField(null=True, blank=True)
+    cl = models.PositiveIntegerField(null=True, blank=True)
+    code = models.PositiveIntegerField(null=True, blank=True)
+    method = models.TextField(null=True, blank=True)
+    tm = models.FloatField(null=True, blank=True)
+    url = models.URLField(null=True, blank=True)
 
     @classmethod
     def generate_dashboard(cls) -> Optional[DashboardT]:
