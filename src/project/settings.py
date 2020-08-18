@@ -1,4 +1,7 @@
+import os
 from pathlib import Path
+
+import dj_database_url
 
 PROJECT_DIR = Path(__file__).parent
 BASE_DIR = PROJECT_DIR.parent
@@ -59,11 +62,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "project.wsgi.application"
 
+development_database_url = "postgresql://alex:alex@localhost:5432/z01"
+database_url = os.getenv("DATABASE_URL", development_database_url)
+database_params = dj_database_url.parse(database_url)
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": (REPO_DIR / "db.sqlite3").as_posix(),
-    }
+    "default": database_params,
 }
 
 AUTH_PASSWORD_VALIDATORS = [

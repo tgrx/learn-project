@@ -57,11 +57,13 @@ class Visit(models.Model):
         ts_now = Delorean()
         params = {}
 
+        dimensions = {"latency": "tm", "traffic": "cl"}
+
         for measure_attr, minutes in zip(HourlyT.__annotations__, (5, 15, 60, 60 * 24)):
             delta = timedelta(minutes=minutes)
             ts = (ts_now - delta).datetime
 
-            for dimension_attr, dimension in {"latency": "tm", "traffic": "cl"}.items():
+            for dimension_attr, dimension in dimensions.items():
                 max_value = df.where(df["at"] >= ts).max()[dimension]
                 min_value = df.where(df["at"] >= ts).min()[dimension]
                 avg_value = df.where(df["at"] >= ts).mean()[dimension]
