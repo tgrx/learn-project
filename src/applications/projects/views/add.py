@@ -1,10 +1,10 @@
-from django.views.generic import DetailView
+from django.views.generic import CreateView
 
 from applications.projects.models import Project
 from applications.stats.utils import count_stats
 
 
 @count_stats
-class SingleProjectView(DetailView):
+class AddProjectView(CreateView):
     model = Project
-    template_name = "projects/single.html"
+    fields = "__all__"

@@ -1,19 +1,11 @@
 from django.urls import reverse_lazy
-from django.views.generic import RedirectView
+from django.views.generic import DeleteView
 
 from applications.projects.models import Project
-from applications.projects.views.mixins import SingleObjectMixin
 from applications.stats.utils import count_stats
 
 
 @count_stats
-class DeleteProjectView(SingleObjectMixin, RedirectView):
-    http_method_names = ["post"]
+class DeleteProjectView(DeleteView):
     model = Project
-    permanent = True
-
-    def get_redirect_url(self, *args, **kwargs):
-        project = self.get_object()
-        project.delete()
-
-        return reverse_lazy("projects:all")
+    success_url = reverse_lazy("projects:all")

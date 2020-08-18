@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse_lazy
 
 
 class Project(models.Model):
@@ -10,3 +11,7 @@ class Project(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} ({self.pk})"
+
+    def get_absolute_url(self):
+        kwargs = {"pk": self.pk}
+        return reverse_lazy("projects:single", kwargs=kwargs)

@@ -8,16 +8,12 @@
             <strong>{{ object.started }} ~ {{ object.ended }}</strong>
             <hr>
             <p>{{ object.description }}</p>
-            <form method="post" action="{% url 'projects:delete' object.pk %}">
-                {% csrf_token %}
-                <button type="submit">Delete</button>
-            </form>
+            <a href="{% url 'projects:update' object.pk %}">
+                <button>Update</button>
+            </a>
+            <a href="{% url 'projects:delete' object.pk %}">
+                <button>Delete</button>
+            </a>
         </article>
     </div>
-    <hr>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Update</button>
-    </form>
 {% endblock %}

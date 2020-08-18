@@ -2,22 +2,18 @@
 {% block title %}All Projects{% endblock %}
 {% block body %}
     <h1>All projects</h1>
+    <a href="{% url 'projects:add' %}">
+        <button>Add new project</button>
+    </a>
     <div class="all">
         {% for project in object_list %}
-            {% if project.visible %}
-                <article>
-                    <a href="{% url 'projects:single' project.pk %}"><h2>{{ project.name }}</h2></a>
-                    <strong>{{ project.started }} ~ {{ project.ended }}</strong>
-                    <hr>
-                    <p>{{ project.description }}</p>
-                </article>
-            {% endif %}
+            <article>
+                <a href="{% url 'projects:single' project.pk %}"><h2>{{ project.name }}</h2></a>
+                <strong>{{ project.started }} ~ {{ project.ended }}</strong>
+                <hr>
+                <p>{{ project.description }}</p>
+            </article>
         {% endfor %}
     </div>
     <hr>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Add new project</button>
-    </form>
 {% endblock %}

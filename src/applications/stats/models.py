@@ -35,6 +35,14 @@ class Visit(models.Model):
     tm = models.FloatField(null=True, blank=True)
     url = models.URLField(null=True, blank=True)
 
+    class Meta:
+        ordering = ["-at"]
+
+    def __str__(self):
+        return f"Visit(at={self.at}, url={self.url})"
+
+    __repr__ = __str__
+
     @classmethod
     def generate_dashboard(cls) -> Optional[DashboardT]:
         df = DataFrame(map(asdict, Visit.objects.all()))
