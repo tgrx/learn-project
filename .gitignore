@@ -1,5 +1,6 @@
-**/.DS_Store
 *$py.class
+**/.DS_Store
+**/.secrets.*
 **/db.sqlite3
 *.cover
 *.egg

@@ -1,0 +1,19 @@
+default:
+  ALLOWED_HOSTS: []
+  DATABASE_URL: ""
+  DEBUG: false
+  PORT: 0
+  SECRET_KEY: ""
+
+development:
+  ALLOWED_HOSTS:
+    - localhost
+    - 127.0.0.1
+  DEBUG: true
+  PORT: 8000
+  SECRET_KEY: "1"
+
+heroku:
+  ALLOWED_HOSTS:
+    - "tms-learn-project.herokuapp.com"
+  DEBUG: false

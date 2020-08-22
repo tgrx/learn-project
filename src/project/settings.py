@@ -2,20 +2,17 @@ import os
 from pathlib import Path
 
 import dj_database_url
+from dynaconf import settings as _ds
 
 PROJECT_DIR = Path(__file__).parent
 BASE_DIR = PROJECT_DIR.parent
 REPO_DIR = BASE_DIR.parent
 
-SECRET_KEY = "1"
+SECRET_KEY = _ds.SECRET_KEY
 
-DEBUG = 1
+DEBUG = _ds.DEBUG
 
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "tms-learn-project.herokuapp.com",
-]
+ALLOWED_HOSTS = _ds.ALLOWED_HOSTS
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -62,12 +59,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "project.wsgi.application"
 
-development_database_url = "postgresql://alex:alex@localhost:5432/z01"
-database_url = os.getenv("DATABASE_URL", development_database_url)
-database_params = dj_database_url.parse(database_url)
+
+database_url = _ds.DATABASE_URL
+if _ds.ENV_FOR_DYNACONF == "heroku":
+    database_url = os.getenv("DATABASE_URL")
 
 DATABASES = {
-    "default": database_params,
+    "default": dj_database_url.parse(database_url),
 }
 
 AUTH_PASSWORD_VALIDATORS = [
