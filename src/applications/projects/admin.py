@@ -10,7 +10,7 @@ class ProjectAdminForm(forms.ModelForm):
         model = Project
         fields = "__all__"
         widgets = {
-            "name": forms.TextInput(),
+            "name": forms.TextInput(attrs={"style": "width: 400px"}),
         }
 
 
