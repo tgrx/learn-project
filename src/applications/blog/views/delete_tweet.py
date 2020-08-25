@@ -7,5 +7,6 @@ from applications.stats.utils import count_stats
 
 @count_stats
 class DeleteTweetView(DeleteView):
+    http_method_names = ["post"]
     model = Tweet
     success_url = reverse_lazy("blog:feed")
