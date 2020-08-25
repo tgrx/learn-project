@@ -15,7 +15,7 @@ pudb = "*"
 delorean = "*"
 dj-database-url = "*"
 django = "*"
-dynaconf = {extras = ["yaml"], version = "*"}
+dynaconf = { extras = ["yaml"], version = "*" }
 pandas = "*"
 psycopg2-binary = "*"
 

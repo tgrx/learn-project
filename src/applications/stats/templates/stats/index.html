@@ -5,7 +5,8 @@
     {% if dashboard %}
         <div class="dashboard">
             <div class="dashboard-item">
-                <p><h2>Latency</h2></p>
+                <p>
+                <h2>Latency</h2></p>
                 <ul>
                     <li>5m: {{ dashboard.latency.m05.avg|floatformat:"0" }}
                         ({{ dashboard.latency.m05.max|floatformat:"0" }})
@@ -22,7 +23,8 @@
                 </ul>
             </div>
             <div class="dashboard-item">
-                <p><h2>Traffic</h2></p>
+                <p>
+                <h2>Traffic</h2></p>
                 <ul>
                     <li>5m: {{ dashboard.traffic.m05.avg|floatformat:"0" }}
                         ({{ dashboard.traffic.m05.max|floatformat:"0" }})
