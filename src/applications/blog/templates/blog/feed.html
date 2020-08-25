@@ -1,0 +1,27 @@
+{% extends "_base.html" %}
+{% block title %}Blog{% endblock %}
+{% block body %}
+    <h1>Tweets</h1>
+    <div class="feed">
+        <form method="post" action="{% url "blog:say_something" %}">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <button type="submit">Tweet</button>
+        </form>
+        {% for tweet in object_list %}
+            <article>
+                <textarea readonly disabled cols="50" rows="3"
+                          style="resize: none; border: 0">{{ tweet.content }}</textarea>
+                <hr>
+                <div class="tweet-meta">
+                    <a href="{% url "blog:tweet" tweet.pk %}"><em>{{ tweet.created }}</em></a>
+                    <form method="post" action="{% url "blog:delete_tweet" tweet.pk %}">
+                        {% csrf_token %}
+                        <button type="submit">X</button>
+                    </form>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+    <hr>
+{% endblock %}

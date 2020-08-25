@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "applications.blog.apps.BlogConfig",
     "applications.hello.apps.HelloConfig",
     "applications.projects.apps.ProjectsConfig",
     "applications.stats.apps.StatsConfig",

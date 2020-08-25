@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <title>Z01: {% block title %}Unknown page{% endblock %}</title>
     <style>
+        :root {
+            --font-size: 1.5rem;
+        }
+
+        body {
+            font-size: var(--font-size);
+        }
+
         article {
             border: 1px darkseagreen solid;
             margin: 2rem;
@@ -100,6 +108,40 @@
             content: "";
             margin-left: 0;
         }
+
+        .feed {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+            max-width: 80%;
+        }
+
+        .feed > * {
+            justify-self: center;
+            max-width: 50%;
+            min-width: 50%;
+            width: 50%;
+        }
+
+        .feed > article {
+            border: 1px #cfcfcf solid;
+            margin: 0.5rem;
+            padding: 0.5rem;
+        }
+
+        .feed em {
+            font-size: calc(var(--font-size) * 0.5);
+        }
+
+        .tweet-meta {
+            display: grid;
+            grid-template-columns: 90% 10%;
+            grid-template-rows: 1fr;
+        }
+
+        .tweet textarea {
+            font-size: calc(var(--font-size) * 1.5);
+        }
     </style>
 </head>
 <body class="{{ theme.value }}">
@@ -111,6 +153,7 @@
             <li><a href="{% url "projects:all" %}">Projects</a></li>
             <li><a href="{% url "stats:index" %}">Stats</a></li>
             <li><a href="{% url "theme:index" %}">Theme</a></li>
+            <li><a href="{% url "blog:feed" %}">Blog</a></li>
         </ul>
     </div>
     <form action="{% url "theme:switch" %}" method="post">

@@ -7,6 +7,7 @@ from django.db.models import Max
 from django.db.models import Min
 from django.http import HttpRequest
 from django.http import HttpResponse
+from django.template.response import TemplateResponse
 
 from applications.stats.custom_types import DashboardT
 from applications.stats.custom_types import HourlyT
@@ -19,20 +20,17 @@ def count_stats(view):
         def dispatch(self, *args, **kwargs):
             t0 = Delorean()
             code = 500
-            clen = 0
+            content_length = 0
             try:
                 resp: HttpResponse = super().dispatch(*args, **kwargs)
                 code = resp.status_code
-                try:
+                if isinstance(resp, TemplateResponse):
                     resp.render()
-                    clen = len(resp.content)
-                except AttributeError:
-                    pass
-
+                content_length = len(bytes(resp))
                 return resp
             finally:
                 td = Delorean() - t0
-                count_visit(self.request, code, td.total_seconds(), clen)
+                count_visit(self.request, code, td.total_seconds(), content_length)
 
     return ViewWithStats
 
@@ -43,7 +41,7 @@ def count_visit(request: HttpRequest, code: int, timing: float, content_length: 
 
     visit = Visit(
         at=Delorean().datetime,
-        cl=content_length / one_kb,
+        cl=content_length,
         code=code,
         method=request.method,
         tm=timing * ms_in_s,
