@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic import RedirectView
@@ -8,7 +9,7 @@ from applications.stats.utils import generate_dashboard
 
 
 @count_stats
-class IndexView(ListView):
+class IndexView(LoginRequiredMixin, ListView):
     model = Visit
     template_name = "stats/index.html"
 
@@ -18,7 +19,7 @@ class IndexView(ListView):
         return ctx
 
 
-class ResetView(RedirectView):
+class ResetView(LoginRequiredMixin, RedirectView):
     http_method_names = ["post"]
 
     def get_redirect_url(self, *args, **kwargs):

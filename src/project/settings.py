@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import dj_database_url
+from django.urls import reverse_lazy
 from dynaconf import settings as _ds
 
 PROJECT_DIR = Path(__file__).parent
@@ -23,6 +24,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "applications.blog.apps.BlogConfig",
     "applications.hello.apps.HelloConfig",
+    "applications.onboarding.apps.OnboardingConfig",
     "applications.projects.apps.ProjectsConfig",
     "applications.stats.apps.StatsConfig",
     "applications.target.apps.TargetConfig",
@@ -88,3 +90,6 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
+
+LOGIN_URL = reverse_lazy("onboarding:sign-in")
+LOGIN_REDIRECT_URL = reverse_lazy("projects:all")

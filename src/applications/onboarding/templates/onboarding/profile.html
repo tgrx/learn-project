@@ -1,0 +1,14 @@
+{% extends "_base.html" %}
+{% block title %}Onboarding{% endblock %}
+{% block body %}
+    <h1>My profile</h1>
+    <ul>
+        <li>Display name: {{ object.display_name }}</li>
+        <li>Birth date: {{ object.birth_date }}</li>
+    </ul>
+    <form method="post" action="{% url "onboarding:profile-update" %}">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <button type="submit">Update profile</button>
+    </form>
+{% endblock %}
