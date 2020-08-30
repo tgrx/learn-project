@@ -1,10 +1,89 @@
 {% extends "_base.html" %}
 {% block title %}Sign Up{% endblock %}
+{% block css %}
+    .form-grid {
+    width: 80%;
+    display: grid;
+    grid-column-gap: 3rem;
+    grid-row-gap: 2rem;
+    grid-template-areas:
+    "form-errors    form-errors"
+    "username       password1"
+    "email          password2";
+    }
+
+    .form-grid > .username {
+    grid-area: username;
+    }
+
+    .form-grid > .email {
+    grid-area: email;
+    }
+
+    .form-grid > .password1 {
+    grid-area: password1;
+    }
+
+    .form-grid > .password2 {
+    grid-area: password2;
+    }
+
+    .form-grid > .form-errors {
+    padding-left: 2rem;
+    border: 1px darkred dotted;
+    color: darkred;
+    font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+    font-size: calc(var(--font-size) * 0.8);
+    grid-area: form-errors;
+    }
+
+    .form-grid > .form-field > * {
+    display: block;
+    }
+
+    .form-grid > .form-field > .errorlist {
+    background: rgba(255, 50, 50, 0.3);
+    margin: 0;
+    padding-right: 0;
+    width: 70%;
+    }
+
+    .form-grid > .form-field > input {
+    height: 2rem;
+    font-size: calc(var(--font-size) * 0.8);
+    font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+    width: 80%;
+    }
+
+{% endblock %}
 {% block body %}
-    {% if form.errors %}
-        <p>Errors:</p>
-        <p>{{ form.errors }}</p>
-    {% endif %}
+    <form method="post">
+        <div class="form-grid">
+            <div class="form-field username">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+            <div class="form-field email">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+            <div class="form-field password1">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {{ form.password1.errors }}
+            </div>
+            <div class="form-field password2">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+                {{ form.password2.errors }}
+            </div>
+        </div>
+        {% csrf_token %}
+        <input type="submit" value="Sign Up">
+        <input name="next" type="hidden" value="{{ next }}">
+    </form>
     {% if next %}
         {% if user.is_authenticated %}
             <p>Your account doesn't have access to this page. To proceed,
@@ -13,10 +92,4 @@
             <p>Please login to see this page.</p>
         {% endif %}
     {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Sign Up">
-        <input name="next" type="hidden" value="{{ next }}">
-    </form>
 {% endblock %}
