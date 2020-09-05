@@ -3,8 +3,10 @@ from itertools import chain
 from pathlib import Path
 
 import dj_database_url
+import sentry_sdk
 from django.urls import reverse_lazy
 from dynaconf import settings as _ds
+from sentry_sdk.integrations.django import DjangoIntegration
 
 PROJECT_DIR = Path(__file__).parent
 BASE_DIR = PROJECT_DIR.parent
@@ -50,7 +52,7 @@ ROOT_URLCONF = "project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [PROJECT_DIR / "templates",],
+        "DIRS": [PROJECT_DIR / "templates", ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -78,9 +80,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator", },
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator", },
 ]
 
 LANGUAGE_CODE = "en-us"
@@ -112,3 +114,11 @@ AWS_S3_OBJECT_PARAMETERS = {"ACL": "public-read"}
 AWS_S3_REGION_NAME = _ds.AWS_S3_REGION_NAME
 AWS_SECRET_ACCESS_KEY = _ds.AWS_SECRET_ACCESS_KEY
 AWS_STORAGE_BUCKET_NAME = _ds.AWS_STORAGE_BUCKET_NAME
+
+if not DEBUG:
+    sentry_sdk.init(
+        dsn=_ds.SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=1.0,
+        send_default_pii=True
+    )

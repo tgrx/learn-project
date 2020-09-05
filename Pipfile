@@ -20,6 +20,7 @@ django-storages = "*"
 dynaconf = { extras = ["yaml"], version = "*" }
 pandas = "*"
 psycopg2-binary = "*"
+sentry-sdk = "*"
 whitenoise = "*"
 
 [requires]

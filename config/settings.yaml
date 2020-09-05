@@ -9,6 +9,7 @@ default:
   DEBUG: false
   PORT: 0
   SECRET_KEY: ""
+  SENTRY_DSN: ""
 
 development:
   AWS_ACCESS_KEY_ID: "AKIAJ5FO7DUGUEWO75RA"
