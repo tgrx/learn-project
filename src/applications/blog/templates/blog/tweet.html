@@ -1,18 +1,18 @@
 {% extends "_base.html" %}
 {% block title %}Tweet{% endblock %}
 {% block body %}
-    <div class="tweet">
-        <article>
+  <div class="tweet">
+    <article>
             <textarea readonly disabled cols="50" rows="3"
                       style="resize: none; border: 0">{{ object.content }}</textarea>
-            <hr>
-            <div class="tweet-meta">
-                <em>{{ object.created }}</em>
-                <form method="post" action="{% url "blog:delete_tweet" object.pk %}">
-                    {% csrf_token %}
-                    <button type="submit">X</button>
-                </form>
-            </div>
-        </article>
-    </div>
+      <hr>
+      <div class="tweet-meta">
+        <em>{{ object.created }}</em>
+        <form method="post" action="{% url "blog:delete_tweet" object.pk %}">
+          {% csrf_token %}
+          <button type="submit">X</button>
+        </form>
+      </div>
+    </article>
+  </div>
 {% endblock %}

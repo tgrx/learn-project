@@ -38,3 +38,15 @@ sh:
 	PYTHONPATH="${PYTHONPATH}" ${PY} src/manage.py shell
 
 
+.PHONY: static
+static:
+	PYTHONPATH="${PYTHONPATH}" ${PY} src/manage.py collectstatic --no-input
+
+
+.PHONY: wipe
+wipe: wipe-static
+
+
+.PHONY: wipe-static
+wipe-static:
+	rm -rf "${HERE}/.static/"

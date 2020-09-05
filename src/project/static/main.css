@@ -1,0 +1,148 @@
+:root {
+  --font-size: 1.5rem;
+}
+
+html {
+  background-attachment: fixed;
+  background-position: center center;
+  background-repeat: no-repeat;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  -webkit-background-size: cover;
+  background-size: cover;
+}
+
+body {
+  font-size: var(--font-size);
+}
+
+article {
+  border: 1px darkseagreen solid;
+  margin: 2rem;
+  padding: 1rem;
+}
+
+.all > article {
+  max-width: 20rem;
+}
+
+.all {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.bright {
+  background-color: rgba(0, 0, 0, 0);
+  color: darkblue;
+}
+
+.dark {
+  background-color: rgba(0, 0, 0, 1);
+  color: white;
+}
+
+.stats-container {
+  display: grid;
+  font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+  font-size: 0.8rem;
+  grid-template-columns: [at] 15% [method] 5% [code] 5% [tm] 10% [cl] 10% [url] 55%;
+  grid-template-rows: auto;
+}
+
+.si {
+  margin: 0;
+  padding: 0;
+}
+
+.sa {
+  grid-column-end: 2;
+  grid-column-start: 1;
+}
+
+.sm {
+  grid-column-end: 3;
+  grid-column-start: 2;
+}
+
+.sc {
+  grid-column-end: 4;
+  grid-column-start: 3;
+}
+
+.st {
+  grid-column-end: 5;
+  grid-column-start: 4;
+}
+
+.cl {
+  grid-column-end: 6;
+  grid-column-start: 5;
+}
+
+.su {
+  grid-column-end: 7;
+  grid-column-start: 6;
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: 100%;
+  margin-bottom: 2rem;
+}
+
+.nav > * {
+  display: inline;
+  grid-row: 1;
+  padding-right: 2rem;
+}
+
+.nav li:after {
+  content: "|";
+  margin-left: 2rem;
+}
+
+.nav li:first-of-type {
+  margin-left: 0;
+}
+
+.nav li:last-of-type:after {
+  content: "";
+  margin-left: 0;
+}
+
+.feed {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  max-width: 80%;
+}
+
+.feed > * {
+  justify-self: center;
+  max-width: 50%;
+  min-width: 50%;
+  width: 50%;
+}
+
+.feed > article {
+  border: 1px #cfcfcf solid;
+  margin: 0.5rem;
+  padding: 0.5rem;
+}
+
+.feed em {
+  font-size: calc(var(--font-size) * 0.5);
+}
+
+.tweet-meta {
+  display: grid;
+  grid-template-columns: 90% 10%;
+  grid-template-rows: 1fr;
+}
+
+.tweet textarea {
+  font-size: calc(var(--font-size) * 1.5);
+}

@@ -1,0 +1,53 @@
+.form-grid {
+  display: grid;
+  grid-column-gap: 3rem;
+  grid-row-gap: 2rem;
+  grid-template-areas:
+    "form-errors    form-errors"
+    "username       password1"
+    "email          password2";
+  width: 80%;
+}
+
+.form-grid > .username {
+  grid-area: username;
+}
+
+.form-grid > .email {
+  grid-area: email;
+}
+
+.form-grid > .password1 {
+  grid-area: password1;
+}
+
+.form-grid > .password2 {
+  grid-area: password2;
+}
+
+.form-grid > .form-errors {
+  border: 1px darkred dotted;
+  color: darkred;
+  font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+  font-size: calc(var(--font-size) * 0.8);
+  grid-area: form-errors;
+  padding-left: 2rem;
+}
+
+.form-grid > .form-field > * {
+  display: block;
+}
+
+.form-grid > .form-field > .errorlist {
+  background: rgba(255, 50, 50, 0.3);
+  margin: 0;
+  padding-right: 0;
+  width: 70%;
+}
+
+.form-grid > .form-field > input {
+  font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+  font-size: calc(var(--font-size) * 0.8);
+  height: 2rem;
+  width: 80%;
+}

@@ -33,6 +33,7 @@
 .scrapy
 .spyderproject
 .spyproject
+.static/
 .tox/
 .venv
 .webassets-cache

@@ -1,4 +1,5 @@
 import os
+from itertools import chain
 from pathlib import Path
 
 import dj_database_url
@@ -13,7 +14,9 @@ SECRET_KEY = _ds.SECRET_KEY
 
 DEBUG = _ds.DEBUG
 
-ALLOWED_HOSTS = _ds.ALLOWED_HOSTS
+INTERNAL_IPS = ["127.0.0.1"]
+INTERNAL_HOSTS = ["localhost"]
+ALLOWED_HOSTS = list(chain(_ds.ALLOWED_HOSTS or [], INTERNAL_IPS, INTERNAL_HOSTS))
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -33,6 +36,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -89,7 +93,21 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = "/static/"
+STATIC_URL = "/s/"
+STATICFILES_DIRS = [
+    PROJECT_DIR / "static",
+]
+STATIC_ROOT = REPO_DIR / ".static"
+if not DEBUG:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 LOGIN_URL = reverse_lazy("onboarding:sign-in")
 LOGIN_REDIRECT_URL = reverse_lazy("projects:all")
+
+AWS_ACCESS_KEY_ID = _ds.AWS_ACCESS_KEY_ID
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_ADDRESSING_STYLE = "path"
+AWS_S3_OBJECT_PARAMETERS = {"ACL": "public-read"}
+AWS_S3_REGION_NAME = _ds.AWS_S3_REGION_NAME
+AWS_SECRET_ACCESS_KEY = _ds.AWS_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = _ds.AWS_STORAGE_BUCKET_NAME

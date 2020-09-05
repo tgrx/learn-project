@@ -1,185 +1,49 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Z01: {% block title %}Unknown page{% endblock %}</title>
-    <style>
-        :root {
-            --font-size: 1.5rem;
-        }
-
-        body {
-            font-size: var(--font-size);
-        }
-
-        article {
-            border: 1px darkseagreen solid;
-            margin: 2rem;
-            padding: 1rem;
-        }
-
-        .all > article {
-            max-width: 20rem;
-        }
-
-        .all {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .bright {
-            background-color: white;
-            color: darkblue;
-        }
-
-        .dark {
-            background-color: black;
-            color: white;
-        }
-
-        .stats-container {
-            display: grid;
-            font-size: 0.8rem;
-            font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
-            grid-template-columns: [at] 15% [method] 5% [code] 5% [tm] 10% [cl] 10% [url] 55%;
-            grid-template-rows: auto;
-        }
-
-        .si {
-            padding: 0;
-            margin: 0;
-        }
-
-        .sa {
-            grid-column-start: 1;
-            grid-column-end: 2;
-        }
-
-        .sm {
-            grid-column-start: 2;
-            grid-column-end: 3;
-        }
-
-        .sc {
-            grid-column-start: 3;
-            grid-column-end: 4;
-        }
-
-        .st {
-            grid-column-start: 4;
-            grid-column-end: 5;
-        }
-
-        .cl {
-            grid-column-start: 5;
-            grid-column-end: 6;
-        }
-
-        .su {
-            grid-column-start: 6;
-            grid-column-end: 7;
-        }
-
-        .nav {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            grid-template-rows: 100%;
-            margin-bottom: 2rem;
-        }
-
-        .nav > * {
-            grid-row: 1;
-            display: inline;
-            padding-right: 2rem;
-        }
-
-        .nav li:after {
-            content: "|";
-            margin-left: 2rem;
-        }
-
-        .nav li:first-of-type {
-            margin-left: 0;
-        }
-
-        .nav li:last-of-type:after {
-            content: "";
-            margin-left: 0;
-        }
-
-        .feed {
-            display: grid;
-            grid-template-columns: 1fr;
-            grid-template-rows: auto;
-            max-width: 80%;
-        }
-
-        .feed > * {
-            justify-self: center;
-            max-width: 50%;
-            min-width: 50%;
-            width: 50%;
-        }
-
-        .feed > article {
-            border: 1px #cfcfcf solid;
-            margin: 0.5rem;
-            padding: 0.5rem;
-        }
-
-        .feed em {
-            font-size: calc(var(--font-size) * 0.5);
-        }
-
-        .tweet-meta {
-            display: grid;
-            grid-template-columns: 90% 10%;
-            grid-template-rows: 1fr;
-        }
-
-        .tweet textarea {
-            font-size: calc(var(--font-size) * 1.5);
-        }
-
-        {% block css %}
-        {% endblock %}
-    </style>
+  <meta charset="UTF-8">
+  <title>Z01: {% block title %}Unknown page{% endblock %}</title>
+  <link href="{% static 'main.css' %}" rel="stylesheet" type="text/css">
+  {% block head %}
+  {% endblock %}
 </head>
 <body class="{{ theme.value }}">
+{% if not request.user.is_anonymous %}
+  <img src="{{ request.user.profile.avatar.original.url }}" alt="avatar" width="200rem">
+{% endif %}
 <nav>
-    <h1><a href="{% url "target:index" %}">Training Project</a></h1>
-    <ul class="nav">
-        <li><a href="{% url "admin:index" %}">Admin</a></li>
-        <li><a href="{% url "hello:index" %}">Hello</a></li>
-        <li><a href="{% url "projects:all" %}">Projects</a></li>
-        <li><a href="{% url "stats:index" %}">Stats</a></li>
-        <li><a href="{% url "theme:index" %}">Theme</a></li>
-        <li><a href="{% url "blog:feed" %}">Blog</a></li>
-    </ul>
-    <div class="nav">
-        <form action="{% url "theme:switch" %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="origin" value="{{ request.path }}">
-            <button type="submit">Switch to {{ theme_next.value }}</button>
-        </form>
-        {% if user.is_authenticated %}
-            <a href="{% url 'onboarding:profile' %}">
-                <button>Profile</button>
-            </a>
-            <a href="{% url 'onboarding:sign-out' %}">
-                <button>Sign Out</button>
-            </a>
-        {% else %}
-            <a href="{% url 'onboarding:sign-in' %}">
-                <button>Sign In</button>
-            </a>
-            <a href="{% url 'onboarding:sign-up' %}">
-                <button>Sign Up</button>
-            </a>
-        {% endif %}
-    </div>
+  <h1><a href="{% url "target:index" %}">Training Project</a></h1>
+  <ul class="nav">
+    <li><a href="{% url "admin:index" %}">Admin</a></li>
+    <li><a href="{% url "hello:index" %}">Hello</a></li>
+    <li><a href="{% url "projects:all" %}">Projects</a></li>
+    <li><a href="{% url "stats:index" %}">Stats</a></li>
+    <li><a href="{% url "theme:index" %}">Theme</a></li>
+    <li><a href="{% url "blog:feed" %}">Blog</a></li>
+  </ul>
+  <div class="nav">
+    <form action="{% url "theme:switch" %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="origin" value="{{ request.path }}">
+      <button type="submit">Switch to {{ theme_next.value }}</button>
+    </form>
+    {% if user.is_authenticated %}
+      <a href="{% url 'onboarding:profile' %}">
+        <button>Profile</button>
+      </a>
+      <a href="{% url 'onboarding:sign-out' %}">
+        <button>Sign Out</button>
+      </a>
+    {% else %}
+      <a href="{% url 'onboarding:sign-in' %}">
+        <button>Sign In</button>
+      </a>
+      <a href="{% url 'onboarding:sign-up' %}">
+        <button>Sign Up</button>
+      </a>
+    {% endif %}
+  </div>
 </nav>
 <hr>
 {% block body %}No content{% endblock %}

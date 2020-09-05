@@ -1,19 +1,19 @@
 {% extends "_base.html" %}
 {% block title %}Project {{ object.name }}{% endblock %}
 {% block body %}
-    <div class="single">
-        <p><a href="{% url 'projects:all' %}"><<< All Projects</a></p>
-        <article>
-            <h1>{{ object.name }}</h1>
-            <strong>{{ object.started }} ~ {{ object.ended }}</strong>
-            <hr>
-            <p>{{ object.description }}</p>
-            <a href="{% url 'projects:update' object.pk %}">
-                <button>Update</button>
-            </a>
-            <a href="{% url 'projects:delete' object.pk %}">
-                <button>Delete</button>
-            </a>
-        </article>
-    </div>
+  <div class="single">
+    <p><a href="{% url 'projects:all' %}"><<< All Projects</a></p>
+    <article>
+      <h1>{{ object.name }}</h1>
+      <strong>{{ object.started }} ~ {{ object.ended }}</strong>
+      <hr>
+      <p>{{ object.description }}</p>
+      <a href="{% url 'projects:update' object.pk %}">
+        <button>Update</button>
+      </a>
+      <a href="{% url 'projects:delete' object.pk %}">
+        <button>Delete</button>
+      </a>
+    </article>
+  </div>
 {% endblock %}

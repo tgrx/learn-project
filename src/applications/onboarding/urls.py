@@ -6,6 +6,7 @@ from applications.onboarding.apps import OnboardingConfig
 app_name = OnboardingConfig.label
 
 urlpatterns = [
+    path("avatar-update/", views.AvatarUpdateView.as_view(), name="avatar-update"),
     path("profile-update/", views.ProfileUpdateView.as_view(), name="profile-update"),
     path("profile/", views.ProfileView.as_view(), name="profile"),
     path("sign-in/", views.SignInView.as_view(), name="sign-in"),

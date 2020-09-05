@@ -12,12 +12,15 @@ isort = "*"
 pudb = "*"
 
 [packages]
+boto3 = "*"
 delorean = "*"
 dj-database-url = "*"
 django = "*"
+django-storages = "*"
 dynaconf = { extras = ["yaml"], version = "*" }
 pandas = "*"
 psycopg2-binary = "*"
+whitenoise = "*"
 
 [requires]
 python_version = "3.8"

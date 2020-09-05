@@ -1,24 +1,24 @@
 {% extends "_base.html" %}
 {% block title %}All Projects{% endblock %}
 {% block body %}
-    <h1>All projects</h1>
-    <a href="{% url 'projects:add' %}">
-        <button>Add new project</button>
-    </a>
-    <div class="all">
-        {% for project in object_list %}
-            <article>
-                <a href="{% url 'projects:single' project.pk %}"><h2>{{ project.name }}</h2></a>
-                <strong>{{ project.started }} ~ {{ project.ended }}</strong>
-                <hr>
-                <p>
-                    {{ project.description|truncatechars:80 }}
-                    {% if project.description|length > 80 %}
-                        <a href="{% url 'projects:single' project.pk %}">expand</a>
-                    {% endif %}
-                </p>
-            </article>
-        {% endfor %}
-    </div>
-    <hr>
+  <h1>All projects</h1>
+  <a href="{% url 'projects:add' %}">
+    <button>Add new project</button>
+  </a>
+  <div class="all">
+    {% for project in object_list %}
+      <article>
+        <a href="{% url 'projects:single' project.pk %}"><h2>{{ project.name }}</h2></a>
+        <strong>{{ project.started }} ~ {{ project.ended }}</strong>
+        <hr>
+        <p>
+          {{ project.description|truncatechars:80 }}
+          {% if project.description|length > 80 %}
+            <a href="{% url 'projects:single' project.pk %}">expand</a>
+          {% endif %}
+        </p>
+      </article>
+    {% endfor %}
+  </div>
+  <hr>
 {% endblock %}
