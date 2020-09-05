@@ -9,7 +9,7 @@
   {% endblock %}
 </head>
 <body class="{{ theme.value }}">
-{% if not request.user.is_anonymous %}
+{% if not request.user.is_anonymous and request.user.profile.avatar.original %}
   <img src="{{ request.user.profile.avatar.original.url }}" alt="avatar" width="200rem">
 {% endif %}
 <nav>

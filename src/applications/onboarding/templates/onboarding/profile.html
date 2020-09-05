@@ -2,7 +2,11 @@
 {% block title %}Onboarding{% endblock %}
 {% block body %}
   <h1>My profile</h1>
-  <img src="{{ object.avatar.original.url }}" alt="avatar" width="200rem">
+  {% if request.user.profile.avatar.original %}
+    <img src="{{ object.avatar.original.url }}" alt="avatar" width="200rem">
+  {% else %}
+    <p>-- no avatar --</p>
+  {% endif %}
   <ul>
     <li>Display name: {{ object.display_name }}</li>
     <li>Birth date: {{ object.birth_date }}</li>
