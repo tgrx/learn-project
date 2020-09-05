@@ -16,6 +16,14 @@ SECRET_KEY = _ds.SECRET_KEY
 
 DEBUG = _ds.DEBUG
 
+if not DEBUG:
+    sentry_sdk.init(
+        dsn=_ds.SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=1.0,
+        send_default_pii=True,
+    )
+
 INTERNAL_IPS = ["127.0.0.1"]
 INTERNAL_HOSTS = ["localhost"]
 ALLOWED_HOSTS = list(chain(_ds.ALLOWED_HOSTS or [], INTERNAL_IPS, INTERNAL_HOSTS))
@@ -114,11 +122,3 @@ AWS_S3_OBJECT_PARAMETERS = {"ACL": "public-read"}
 AWS_S3_REGION_NAME = _ds.AWS_S3_REGION_NAME
 AWS_SECRET_ACCESS_KEY = _ds.AWS_SECRET_ACCESS_KEY
 AWS_STORAGE_BUCKET_NAME = _ds.AWS_STORAGE_BUCKET_NAME
-
-if not DEBUG:
-    sentry_sdk.init(
-        dsn=_ds.SENTRY_DSN,
-        integrations=[DjangoIntegration()],
-        traces_sample_rate=1.0,
-        send_default_pii=True
-    )
