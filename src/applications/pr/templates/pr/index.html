@@ -1,0 +1,43 @@
+{% extends "_base.html" %}
+{% block title %}PR{% endblock %}
+{% block head %}
+  <style>
+    .grid {
+      display: grid;
+      grid-column-gap: 1rem;
+      grid-row-gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 4fr));
+    }
+
+    .photo img {
+      object-fit: cover;
+      width: 100%;
+    }
+  </style>
+{% endblock %}
+{% block body %}
+  <h2>PR</h2>
+  {% if object %}
+    <p>Meet the today guest:</p>
+    <h1>{{ object.name }}</h1>
+    {% if object.social_url and object.social_platform %}
+      Contact her via <a href="{{ object.social_url }}">{{ object.social_platform }}</a>
+    {% endif %}
+    {% if object.notes %}
+      <p>
+        <emph>{{ object.notes }}</emph>
+      </p>
+    {% endif %}
+    <hr>
+    <div class="grid">
+      {% for photo in object.random_photos %}
+        <div class="photo">
+          <a href="{{ photo.url }}">
+            <img src="{{ photo.url }}" alt="lol">
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <p>To have a PR contact me and we'll discuss the terms</p>
+{% endblock %}

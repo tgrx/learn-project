@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "applications.blog.apps.BlogConfig",
     "applications.hello.apps.HelloConfig",
     "applications.onboarding.apps.OnboardingConfig",
+    "applications.pr.apps.PrConfig",
     "applications.projects.apps.ProjectsConfig",
     "applications.stats.apps.StatsConfig",
     "applications.target.apps.TargetConfig",
