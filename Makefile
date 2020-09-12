@@ -9,8 +9,10 @@ PY := ${RUN} python
 
 .PHONY: format
 format:
-	${RUN} isort --virtual-env "${VENV}" "${HERE}"
-	${RUN} black "${HERE}"
+	${RUN} isort --virtual-env "${VENV}" "${HERE}/src"
+	${RUN} isort --virtual-env "${VENV}" "${HERE}/serverless/src"
+	${RUN} black "${HERE}/src"
+	${RUN} black "${HERE}/serverless/src"
 
 
 .PHONY: run
@@ -44,9 +46,14 @@ static:
 
 
 .PHONY: wipe
-wipe: wipe-static
+wipe: wipe-static wipe-sls
 
 
 .PHONY: wipe-static
 wipe-static:
 	rm -rf "${HERE}/.static/"
+
+
+.PHONY: wipe-sls
+wipe-sls:
+	rm -rf "${HERE}/serverless/.serverless/"

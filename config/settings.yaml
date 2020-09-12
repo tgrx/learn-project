@@ -1,7 +1,7 @@
 default:
   ALLOWED_HOSTS: [ ]
   AWS_ACCESS_KEY_ID: ""
-  AWS_S3_AVATARS_LOCATION: ""
+  AWS_S3_LOCATION: ""
   AWS_S3_REGION_NAME: ""
   AWS_SECRET_ACCESS_KEY: ""
   AWS_STORAGE_BUCKET_NAME: ""
@@ -13,7 +13,7 @@ default:
 
 development:
   AWS_ACCESS_KEY_ID: "AKIAJ5FO7DUGUEWO75RA"
-  AWS_S3_AVATARS_LOCATION: "avatars-dev"
+  AWS_S3_LOCATION: "dev"
   AWS_S3_REGION_NAME: "eu-central-1"
   AWS_STORAGE_BUCKET_NAME: "tms-learn-project"
   DEBUG: true
@@ -24,7 +24,7 @@ heroku:
   ALLOWED_HOSTS:
     - "tms-learn-project.herokuapp.com"
   AWS_ACCESS_KEY_ID: "AKIAJ5FO7DUGUEWO75RA"
-  AWS_S3_AVATARS_LOCATION: "avatars-heroku"
+  AWS_S3_LOCATION: "heroku"
   AWS_S3_REGION_NAME: "eu-central-1"
   AWS_STORAGE_BUCKET_NAME: "tms-learn-project"
   DEBUG: false

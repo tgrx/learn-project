@@ -4,7 +4,7 @@ from storages.backends.s3boto3 import S3Boto3Storage
 
 
 def upload_to(instance: "Avatar", filename):
-    return f"{settings.AWS_S3_AVATARS_LOCATION}/avatar__{instance.pk}__{filename}"
+    return f"{settings.AWS_S3_LOCATION}/avatars/{instance.pk}/{filename}"
 
 
 class Avatar(models.Model):

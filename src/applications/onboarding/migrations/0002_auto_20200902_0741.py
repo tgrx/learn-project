@@ -35,7 +35,10 @@ class Migration(migrations.Migration):
                 ),
             ],
         ),
-        migrations.RemoveField(model_name="profile", name="id",),
+        migrations.RemoveField(
+            model_name="profile",
+            name="id",
+        ),
         migrations.AlterField(
             model_name="profile",
             name="user",

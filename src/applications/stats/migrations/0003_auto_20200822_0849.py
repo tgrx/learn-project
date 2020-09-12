@@ -9,5 +9,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterModelOptions(name="visit", options={"ordering": ["-at"]},),
+        migrations.AlterModelOptions(
+            name="visit",
+            options={"ordering": ["-at"]},
+        ),
     ]

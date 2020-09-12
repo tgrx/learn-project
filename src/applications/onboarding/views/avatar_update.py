@@ -14,3 +14,7 @@ class AvatarUpdateView(CurrentUserMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.get_current_avatar()
+
+    def form_valid(self, form):
+        self.setup_profile()
+        return super().form_valid(form)

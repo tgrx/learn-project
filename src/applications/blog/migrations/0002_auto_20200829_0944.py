@@ -9,5 +9,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterModelOptions(name="tweet", options={"ordering": ["-created"]},),
+        migrations.AlterModelOptions(
+            name="tweet",
+            options={"ordering": ["-created"]},
+        ),
     ]

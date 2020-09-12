@@ -1,0 +1,38 @@
+service: tms-learn-project
+provider:
+  name: aws
+  endpointType: REGIONAL
+  region: eu-central-1
+  runtime: python3.8
+  timeout: 60
+  versionFunctions: false
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 's3:DeleteObject'
+        - 's3:GetObject'
+        - 's3:GetObjectAcl'
+        - 's3:PutObject'
+        - 's3:PutObjectAcl'
+      Resource:
+        - 'arn:aws:s3:::tms-learn-project/*'
+    - Effect: 'Allow'
+      Action:
+        - 's3:ListBucket'
+      Resource:
+        - 'arn:aws:s3:::tms-learn-project'
+functions:
+  avatar-cleaner:
+    environment:
+      PYTHONPATH: src
+    handler: avatar_cleaner.lambda_function.lambda_handler
+    events:
+      - s3:
+          bucket: tms-learn-project
+          event: s3:ObjectCreated:*
+          existing: false
+plugins:
+  - serverless-python-requirements
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux

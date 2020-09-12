@@ -21,6 +21,12 @@ class CurrentUserMixin:
             pass
         return profile
 
+    def setup_profile(self):
+        profile = self.get_current_profile()
+        if not profile:
+            profile = Profile(user=self.get_current_user())
+            profile.save()
+
     def get_current_avatar(self) -> Optional[Avatar]:
         avatar = None
         exc_missing = (
