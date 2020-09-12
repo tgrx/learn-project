@@ -25,6 +25,7 @@ functions:
   avatar-cleaner:
     environment:
       PYTHONPATH: src
+      DYNACONF_DEBUG: 0
     handler: avatar_cleaner.lambda_function.lambda_handler
     events:
       - s3:

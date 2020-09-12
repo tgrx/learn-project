@@ -17,7 +17,7 @@ class S3File(NamedTuple):
 
     @property
     def path(self) -> str:
-        return "/".join((self.location, self.package, self.subject, self.filename))
+        return "/".join((self.location, self.package, self.subject))
 
     @classmethod
     def from_event(cls, event: Dict) -> "S3File":
