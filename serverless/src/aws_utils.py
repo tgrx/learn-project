@@ -62,5 +62,7 @@ class S3File(NamedTuple):
 def list_avatars(s3, trigger: S3File) -> Generator[S3File, None, None]:
     response = s3.list_objects(Bucket=trigger.bucket, Prefix=trigger.path)
     contents = response.get("Contents", [])
-    files = map(S3File.from_contents_item, contents)
+    files = (
+        S3File.from_contents_item(bucket=trigger.bucket, item=item) for item in contents
+    )
     yield from files
