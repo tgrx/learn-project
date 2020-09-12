@@ -5,7 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 astpretty = "*"
-black = "==19.10b0"
+black = "==20.8b1"
 httpie = "*"
 ipython = "*"
 isort = "*"
@@ -17,9 +17,11 @@ delorean = "*"
 dj-database-url = "*"
 django = "*"
 django-storages = "*"
+djangorestframework = "*"
 dynaconf = { extras = ["yaml"], version = "*" }
 pandas = "*"
 psycopg2-binary = "*"
+requests = "*"
 sentry-sdk = "*"
 whitenoise = "*"
 

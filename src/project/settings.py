@@ -35,6 +35,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # -----------------------------
+    "rest_framework",
+    "rest_framework.authtoken",
+    # -----------------------------
+    "applications.api.apps.ApiConfig",
     "applications.blog.apps.BlogConfig",
     "applications.hello.apps.HelloConfig",
     "applications.onboarding.apps.OnboardingConfig",
@@ -123,3 +128,9 @@ AWS_S3_OBJECT_PARAMETERS = {"ACL": "public-read"}
 AWS_S3_REGION_NAME = _ds.AWS_S3_REGION_NAME
 AWS_SECRET_ACCESS_KEY = _ds.AWS_SECRET_ACCESS_KEY
 AWS_STORAGE_BUCKET_NAME = _ds.AWS_STORAGE_BUCKET_NAME
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+}
