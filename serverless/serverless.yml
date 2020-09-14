@@ -1,38 +1,50 @@
 service: tms-learn-project
 provider:
-  name: aws
   endpointType: REGIONAL
+  environment:
+    DYNACONF_DEBUG: 0
+    PYTHONPATH: src
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:DeleteObject
+        - s3:GetObject
+        - s3:GetObjectAcl
+        - s3:PutObject
+        - s3:PutObjectAcl
+      Resource:
+        - arn:aws:s3:::tms-learn-project/*
+    - Effect: Allow
+      Action:
+        - s3:ListBucket
+      Resource:
+        - arn:aws:s3:::tms-learn-project
+  iamManagedPolicies:
+    - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  name: aws
   region: eu-central-1
   runtime: python3.8
-  timeout: 60
+  timeout: 30
   versionFunctions: false
-  iamRoleStatements:
-    - Effect: 'Allow'
-      Action:
-        - 's3:DeleteObject'
-        - 's3:GetObject'
-        - 's3:GetObjectAcl'
-        - 's3:PutObject'
-        - 's3:PutObjectAcl'
-      Resource:
-        - 'arn:aws:s3:::tms-learn-project/*'
-    - Effect: 'Allow'
-      Action:
-        - 's3:ListBucket'
-      Resource:
-        - 'arn:aws:s3:::tms-learn-project'
 functions:
-  avatar-cleaner:
-    environment:
-      PYTHONPATH: src
-      DYNACONF_DEBUG: 0
-    handler: avatar_cleaner.lambda_function.lambda_handler
+  AvatarCleanerSingleProfile:
+    handler: avatar_cleaner.single_profile.lambda_handler
     events:
       - s3:
           bucket: tms-learn-project
           event: s3:ObjectCreated:*
           existing: false
+  AvatarCleanerMissingProfiles:
+    handler: avatar_cleaner.missing_profiles.lambda_handler
+    environment:
+      DYNACONF_API: https://tms-learn-project.herokuapp.com/api/v1/avatar/
+      DYNACONF_API_TOKEN: ""
+      DYNACONF_BUCKET: tms-learn-project
+      DYNACONF_LOCATION: heroku
+    events:
+      - schedule: rate(12 hours)
 plugins:
+  - serverless-iam-roles-per-function
   - serverless-python-requirements
 custom:
   pythonRequirements:

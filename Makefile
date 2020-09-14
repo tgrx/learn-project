@@ -45,6 +45,11 @@ static:
 	PYTHONPATH="${PYTHONPATH}" ${PY} src/manage.py collectstatic --no-input
 
 
+.PHONY: sls
+sls:
+	(cd "${HERE}/serverless" && sls deploy)
+
+
 .PHONY: wipe
 wipe: wipe-static wipe-sls
 
