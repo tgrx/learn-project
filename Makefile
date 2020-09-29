@@ -1,53 +1,49 @@
-HERE := $(shell pwd)
-VENV := $(shell pipenv --venv)
-SRC := ${HERE}/src
-PYTHONPATH := ${SRC}
-
-RUN := pipenv run
-PY := ${RUN} python
-
-
 .PHONY: format
 format:
-	${RUN} isort --virtual-env "${VENV}" "${HERE}/src"
-	${RUN} isort --virtual-env "${VENV}" "${HERE}/serverless/src"
-	${RUN} black "${HERE}/src"
-	${RUN} black "${HERE}/serverless/src"
+	$(call log, reorganizing imports & formatting code)
+	$(RUN) isort --virtual-env="$(DIR_VENV)" "$(DIR_SRC)" "$(DIR_SERVERLESS_SRC)"
+	$(RUN) black "$(DIR_SRC)" "$(DIR_SERVERLESS_SRC)"
 
 
 .PHONY: run
 run:
-	PYTHONPATH="${PYTHONPATH}" ${PY} src/manage.py runserver
+	$(call log, starting django server)
+	$(PYTHON) src/manage.py runserver
 
 
 .PHONY: migrate
 migrate:
-	PYTHONPATH="${PYTHONPATH}" ${PY} src/manage.py migrate
+	$(call log, applying migrations)
+	$(PYTHON) src/manage.py migrate
 
 
 .PHONY: migrations
 migrations:
-	PYTHONPATH="${PYTHONPATH}" ${PY} src/manage.py makemigrations
+	$(call log, generating migrations)
+	$(PYTHON) src/manage.py makemigrations
 
 
 .PHONY: su
 su:
-	PYTHONPATH="${PYTHONPATH}" ${PY} src/manage.py createsuperuser
+	$(call log, creating a new superuser)
+	$(PYTHON) src/manage.py createsuperuser
 
 
 .PHONY: sh
 sh:
-	PYTHONPATH="${PYTHONPATH}" ${PY} src/manage.py shell
+	$(call log, starting django shell)
+	$(PYTHON) src/manage.py shell
 
 
 .PHONY: static
 static:
-	PYTHONPATH="${PYTHONPATH}" ${PY} src/manage.py collectstatic --no-input
+	$(call log, collecting static)
+	$(PYTHON) src/manage.py collectstatic --no-input
 
 
 .PHONY: sls
 sls:
-	(cd "${HERE}/serverless" && sls deploy)
+	(cd "$(DIR_SERVERLESS)" && sls deploy)
 
 
 .PHONY: wipe
@@ -56,9 +52,9 @@ wipe: wipe-static wipe-sls
 
 .PHONY: wipe-static
 wipe-static:
-	rm -rf "${HERE}/.static/"
+	rm -rf "${DIR_REPO}/.static/"
 
 
 .PHONY: wipe-sls
 wipe-sls:
-	rm -rf "${HERE}/serverless/.serverless/"
+	rm -rf "$(DIR_SERVERLESS)/.serverless/"
