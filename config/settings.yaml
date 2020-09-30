@@ -10,6 +10,7 @@ default:
   PORT: 0
   SECRET_KEY: ""
   SENTRY_DSN: ""
+  VENV_SYNTHETIC: false
 
 development:
   AWS_ACCESS_KEY_ID: "AKIAJ5FO7DUGUEWO75RA"
@@ -28,3 +29,4 @@ heroku:
   AWS_S3_REGION_NAME: "eu-central-1"
   AWS_STORAGE_BUCKET_NAME: "tms-learn-project"
   DEBUG: false
+  VENV_SYNTHETIC: true
