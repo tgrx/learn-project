@@ -15,12 +15,15 @@
 <nav>
   <h1><a href="{% url "target:index" %}">Training Project</a></h1>
   <ul class="nav">
-    <li><a href="{% url "admin:index" %}">Admin</a></li>
     <li><a href="{% url "hello:index" %}">Hello</a></li>
     <li><a href="{% url "projects:all" %}">Projects</a></li>
     <li><a href="{% url "stats:index" %}">Stats</a></li>
     <li><a href="{% url "theme:index" %}">Theme</a></li>
     <li><a href="{% url "blog:feed" %}">Blog</a></li>
+    {% if user.is_superuser %}
+    <li><a href="{% url "admin:index" %}">Admin</a></li>
+    <li><a href="{% url "bot:manage" %}">Manage Bot</a></li>
+    {% endif %}
   </ul>
   <div class="nav">
     <form action="{% url "theme:switch" %}" method="post">

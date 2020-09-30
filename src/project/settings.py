@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # -----------------------------
     "applications.api.apps.ApiConfig",
     "applications.blog.apps.BlogConfig",
+    "applications.bot.apps.BotConfig",
     "applications.hello.apps.HelloConfig",
     "applications.onboarding.apps.OnboardingConfig",
     "applications.pr.apps.PrConfig",
@@ -142,3 +143,6 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
     ],
 }
+
+TELEGRAM_BOT_TOKEN = _ds.TELEGRAM_BOT_TOKEN
+SITE = _ds.SITE

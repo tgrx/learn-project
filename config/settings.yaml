@@ -7,9 +7,37 @@ default:
   AWS_STORAGE_BUCKET_NAME: ""
   DATABASE_URL: ""
   DEBUG: false
+  DIRS_EXCLUDED:
+    - .idea
+    - serverless/.serverless
+    - serverless/node_modules
+    - storage
+  DIRS_RESOURCES:
+    - config
+    - src/applications/onboarding/management
+    - src/applications/onboarding/static
+    - src/applications/target/management
+    - src/project/static
+  DIRS_SOURCES:
+    - serverless/src
+    - src
+  DIRS_TEMPLATES:
+    - src/applications/blog/templates
+    - src/applications/bot/templates
+    - src/applications/hello/templates
+    - src/applications/onboarding/templates
+    - src/applications/pr/templates
+    - src/applications/projects/templates
+    - src/applications/stats/templates
+    - src/applications/target/templates
+    - src/applications/theme/templates
+    - src/project/templates
   PORT: 0
   SECRET_KEY: ""
   SENTRY_DSN: ""
+  SITE: ""
+  TELEGRAM_BOT_TOKEN: ""
+  TEMPLATE_ENGINE: "Django"
   VENV_SYNTHETIC: false
 
 development:
@@ -29,4 +57,5 @@ heroku:
   AWS_S3_REGION_NAME: "eu-central-1"
   AWS_STORAGE_BUCKET_NAME: "tms-learn-project"
   DEBUG: false
+  SITE: "tms-learn-project.herokuapp.com"
   VENV_SYNTHETIC: true

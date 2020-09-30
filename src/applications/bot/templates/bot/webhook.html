@@ -1,0 +1,18 @@
+{% extends "_base.html" %}
+{% block title %}
+  Telegram Webhook page
+{% endblock %}
+{% block body %}
+  <h1>Webhook</h1>
+  <ul>
+    <li>URL: {{ webhook.url }}</li>
+    <li>Pending update count: {{ webhook.pending_update_count }}</li>
+    <li>Last error date: {{ webhook.last_error_date }}</li>
+    <li>Last error message: {{ webhook.last_error_message }}</li>
+    <li>Max connections: {{ webhook.max_connections }}</li>
+  </ul>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Set Webhook</button>
+  </form>
+{% endblock %}
